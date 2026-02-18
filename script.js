@@ -1037,11 +1037,45 @@ function renderPlayerDashboard(playerId) {
     const dashboard = document.getElementById('playerDashboard');
     dashboard.innerHTML = `
     <div class="card mb-3">
+        <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>${player.name}</h4>
+            <button class="btn btn-sm btn-outline-secondary d-none" onclick="openEditFactsModal(${player.id})">
+                <i class="bi bi-pencil me-1"></i> Edit Facts
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-4 text-center">
+            <div class="score-circle ${scoreInfo.class}">${player.score}</div>
+            <h5 class="mt-3"><span class="badge bg-${scoreInfo.badge}">${scoreInfo.label}</span></h5>
+            <div class="progress mt-2" style="height: 25px;">
+                <div class="progress-bar bg-${scoreInfo.badge}" role="progressbar" style="width: ${player.score}%">${player.score}%</div>
+            </div>
+            </div>
+            <div class="col-md-8">
+            <h6>Score Explanation</h6>
+            <ul class="list-unstyled">
+                ${explanation.length > 0 ? explanation.map(e => `<li><i class="bi bi-dash-circle text-danger me-1"></i> <strong>-${e.value.toFixed(1)} points:</strong> ${e.reason}</li>`).join('') : '<li class="text-muted">No deductions</li>'}
+            </ul>
+            ${player.scoreBreakdown ? `
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <strong>Total Penalty:</strong> ${player.scoreBreakdown.totalPenalty.toFixed(1)} points<br>
+                        <strong>Recent Boost:</strong> ${player.scoreBreakdown.recentBoostMultiplier}x
+                    </small>
+                </div>
+            ` : ''}
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Critical Information</h5>
             <div>
                 <button class="btn btn-sm btn-primary me-2" id="toggleDetailsBtn-${playerId}" onclick="toggleAllDetails(${playerId})">
-                    <i class="bi bi-arrows-expand me-1" id="toggleIcon-${playerId}"></i> Toggle
+                    <i class="bi bi-arrows-expand me-1" id="toggleIcon-${playerId}"></i> Expand details
                 </button>
                 <button class="btn btn-sm btn-success" onclick="downloadPlayerReport(${playerId})">
                     <i class="bi bi-download me-1"></i> Download
@@ -1070,7 +1104,12 @@ function renderPlayerDashboard(playerId) {
                 <th style="width: 40px;"></th>
             </tr></thead>
             <tbody>
-            ${sortedInjuries.map((inj, i) => `
+            ${sortedInjuries.map((inj, i) => {
+                const statusColor = inj.currentStatus === 'Recovered' || inj.currentStatus === 'Asymptomatic' ? 'success' : 
+                                   inj.currentStatus === 'Symptomatic' || inj.currentStatus === 'Ongoing' ? 'danger' : 'warning';
+                const typeColor = inj.type === 'Fracture' || inj.type === 'Dislocation' || inj.type === 'Tear' ? 'danger' : 
+                                 inj.type === 'Sprain' || inj.type === 'Strain' ? 'warning' : 'success';
+                return `
                 <tr class="injury-row-${playerId}-${i}" style="cursor: pointer; border-bottom: 1px solid #dee2e6;" onclick="toggleInjuryDetails(${playerId}, ${i})">
                     <td>${inj.injuryName || 'Unknown'}</td>
                     <td>${inj.bodyRegion || 'Unknown'} ${inj.side !== 'NA' ? `(${inj.side})` : ''}</td>
@@ -1081,7 +1120,7 @@ function renderPlayerDashboard(playerId) {
                         </span>
                     </td>
                     <td>
-                        <span class="badge bg-${inj.currentStatus === 'Recovered' || inj.currentStatus === 'Asymptomatic' ? 'success' : 'warning'}">
+                        <span class="badge bg-${statusColor}">
                             ${inj.currentStatus || 'Unknown'}
                         </span>
                     </td>
@@ -1113,7 +1152,8 @@ function renderPlayerDashboard(playerId) {
                         </div>
                     </td>
                 </tr>
-            `).join('')}
+            `;
+            }).join('')}
             </tbody>
         </table>
 
@@ -1138,18 +1178,23 @@ function renderPlayerDashboard(playerId) {
                 <th style="width: 40px;"></th>
             </tr></thead>
             <tbody>
-            ${sortedSurgeries.map((surg, i) => `
+            ${sortedSurgeries.map((surg, i) => {
+                const typeColor = surg.procedureCategory === 'Reconstruction' || surg.procedureCategory === 'ORIF' ? 'danger' : 
+                                 surg.procedureCategory === 'Repair' ? 'warning' : 'success';
+                const outcomeColor = surg.outcome?.residualSymptoms === 'None' ? 'success' : 
+                                    surg.outcome?.residualSymptoms === 'Severe' || surg.outcome?.residualSymptoms === 'Moderate' ? 'danger' : 'warning';
+                return `
                 <tr class="surgery-row-${playerId}-${i}" style="cursor: pointer; border-bottom: 1px solid #dee2e6;" onclick="toggleSurgeryDetails(${playerId}, ${i})">
                     <td>${surg.procedure || 'Unknown'}</td>
                     <td>${surg.bodyRegion || 'Unknown'} ${surg.side !== 'NA' ? `(${surg.side})` : ''}</td>
                     <td>${formatDate(surg.date)}</td>
                     <td>
-                        <span class="badge bg-${surg.majorJoint ? 'danger' : 'info'}">
+                        <span class="badge bg-${typeColor}">
                             ${surg.procedureCategory || 'Unknown'}
                         </span>
                     </td>
                     <td>
-                        <span class="badge bg-${surg.outcome?.returnedToPlay ? 'success' : 'warning'}">
+                        <span class="badge bg-${outcomeColor}">
                             ${surg.outcome?.residualSymptoms || 'Unknown'}
                         </span>
                     </td>
@@ -1175,53 +1220,82 @@ function renderPlayerDashboard(playerId) {
                         </div>
                     </td>
                 </tr>
-            `).join('')}
+            `;
+            }).join('')}
             </tbody>
         </table>
 
         <h6 class="mt-3">Imaging Findings</h6>
-        <div class="accordion" id="imagingAccordion">
-            ${(player.facts.imagingFindings || []).map((img, i) => `
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#img${i}">
-                    ${img.modality || 'Imaging'} - ${img.bodyRegion || 'Unknown'} (${formatDate(img.date)})
-                </button>
-                </h2>
-                <div id="img${i}" class="accordion-collapse collapse">
-                <div class="accordion-body">
-                    <strong>Modality:</strong> ${img.modality || 'Unknown'}<br>
-                    <strong>Body Region:</strong> ${img.bodyRegion || 'Unknown'} ${img.side !== 'NA' ? `(${img.side})` : ''}<br>
-                    <strong>Date:</strong> ${formatDate(img.date)}<br>
-                    <strong>Source:</strong> ${img.sourceDoc || 'Unknown'}<br>
-                    ${img.imaging?.finding ? `
-                        <hr>
-                        <div class="alert alert-info mb-2">
-                            <strong><i class="bi bi-file-medical me-1"></i>Finding Description:</strong><br>
-                            ${img.imaging.finding}
+        <table class="table table-sm">
+            <thead><tr>
+                <th>Modality</th>
+                <th>Body Region</th>
+                <th>Structured Findings</th>
+                <th style="width: 40px;"></th>
+            </tr></thead>
+            <tbody>
+            ${(player.facts.imagingFindings || []).map((img, i) => {
+                const sf = img.structuredFindings || {};
+                const findings = [];
+                if (sf.degenerativeChange && sf.degenerativeChange !== 'None' && sf.degenerativeChange !== 'Unknown') findings.push('Degenerative');
+                if (sf.cartilageDamage && sf.cartilageDamage !== 'None' && sf.cartilageDamage !== 'Unknown') findings.push('Cartilage');
+                if (sf.labrumMeniscusStatus && sf.labrumMeniscusStatus !== 'Normal' && sf.labrumMeniscusStatus !== 'Unknown') findings.push('Labrum/Meniscus');
+                if (sf.tendonStatus && sf.tendonStatus !== 'Normal' && sf.tendonStatus !== 'Unknown') findings.push('Tendon');
+                if (sf.ligamentStatus && sf.ligamentStatus !== 'Normal' && sf.ligamentStatus !== 'Unknown') findings.push('Ligament');
+                if (sf.effusion && sf.effusion !== 'None' && sf.effusion !== 'Unknown') findings.push('Effusion');
+                if (sf.looseBodies) findings.push('Loose Bodies');
+                if (sf.nonunionOrDelayedUnion) findings.push('Nonunion');
+                if (sf.avascularNecrosisConcern) findings.push('AVN');
+                if (sf.postTraumaticArthritis) findings.push('Arthritis');
+                if (sf.stressReactionOrFracture) findings.push('Stress Fx');
+                if (sf.hardwareComplication && sf.hardwareComplication !== 'None' && sf.hardwareComplication !== 'Unknown') findings.push('Hardware');
+                const findingsText = findings.length > 0 ? findings.join(', ') : 'None';
+                return `
+                <tr class="imaging-row-${playerId}-${i}" style="cursor: pointer; border-bottom: 1px solid #dee2e6;" onclick="toggleImagingDetails(${playerId}, ${i})">
+                    <td>${img.modality || 'Unknown'}</td>
+                    <td>${img.bodyRegion || 'Unknown'} ${img.side !== 'NA' ? `(${img.side})` : ''}</td>
+                    <td><small>${findingsText}</small></td>
+                    <td class="text-center">
+                        <i class="bi bi-chevron-down imaging-chevron-${playerId}-${i}" style="font-size: 0.85rem;"></i>
+                    </td>
+                </tr>
+                <tr class="imaging-details-${playerId}-${i}" style="display: none; background-color: #f8f9fa;">
+                    <td colspan="4" class="p-3">
+                        <p class="mb-2"><strong>Date:</strong> ${formatDate(img.date)}</p>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p class="mb-2"><strong>Source:</strong> ${img.sourceDoc || 'Unknown'}</p>
+                                ${img.imaging?.finding ? `
+                                    <div class="alert alert-info mb-3">
+                                        <strong><i class="bi bi-file-medical me-1"></i>Finding Description:</strong><br>
+                                        ${img.imaging.finding}
+                                    </div>
+                                ` : ''}
+                                ${img.structuredFindings ? `
+                                    <h6 class="text-primary mt-3"><i class="bi bi-clipboard-data me-1"></i>Structured Findings</h6>
+                                    <div class="ms-3">
+                                        ${img.structuredFindings.degenerativeChange && img.structuredFindings.degenerativeChange !== 'None' && img.structuredFindings.degenerativeChange !== 'Unknown' ? `• Degenerative Change: <span class="badge bg-warning">${img.structuredFindings.degenerativeChange}</span><br>` : ''}
+                                        ${img.structuredFindings.cartilageDamage && img.structuredFindings.cartilageDamage !== 'None' && img.structuredFindings.cartilageDamage !== 'Unknown' ? `• Cartilage Damage: <span class="badge bg-warning">${img.structuredFindings.cartilageDamage}</span><br>` : ''}
+                                        ${img.structuredFindings.labrumMeniscusStatus && img.structuredFindings.labrumMeniscusStatus !== 'Normal' && img.structuredFindings.labrumMeniscusStatus !== 'Unknown' ? `• Labrum/Meniscus: <span class="badge bg-warning">${img.structuredFindings.labrumMeniscusStatus}</span><br>` : ''}
+                                        ${img.structuredFindings.tendonStatus && img.structuredFindings.tendonStatus !== 'Normal' && img.structuredFindings.tendonStatus !== 'Unknown' ? `• Tendon: <span class="badge bg-warning">${img.structuredFindings.tendonStatus}</span><br>` : ''}
+                                        ${img.structuredFindings.ligamentStatus && img.structuredFindings.ligamentStatus !== 'Normal' && img.structuredFindings.ligamentStatus !== 'Unknown' ? `• Ligament: <span class="badge bg-warning">${img.structuredFindings.ligamentStatus}</span><br>` : ''}
+                                        ${img.structuredFindings.effusion && img.structuredFindings.effusion !== 'None' && img.structuredFindings.effusion !== 'Unknown' ? `• Effusion: <span class="badge bg-success">${img.structuredFindings.effusion}</span><br>` : ''}
+                                        ${img.structuredFindings.looseBodies ? `• <span class="badge bg-danger">Loose Bodies Present</span><br>` : ''}
+                                        ${img.structuredFindings.nonunionOrDelayedUnion ? `• <span class="badge bg-danger">Nonunion/Delayed Union</span><br>` : ''}
+                                        ${img.structuredFindings.avascularNecrosisConcern ? `• <span class="badge bg-danger">AVN Concern</span><br>` : ''}
+                                        ${img.structuredFindings.postTraumaticArthritis ? `• <span class="badge bg-danger">Post-Traumatic Arthritis</span><br>` : ''}
+                                        ${img.structuredFindings.stressReactionOrFracture ? `• <span class="badge bg-danger">Stress Reaction/Fracture</span><br>` : ''}
+                                        ${img.structuredFindings.hardwareComplication && img.structuredFindings.hardwareComplication !== 'None' && img.structuredFindings.hardwareComplication !== 'Unknown' ? `• Hardware: <span class="badge bg-warning">${img.structuredFindings.hardwareComplication}</span><br>` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
-                    ` : ''}
-                    ${img.structuredFindings ? `
-                        <hr>
-                        <strong>Structured Findings:</strong><br>
-                        ${img.structuredFindings.degenerativeChange && img.structuredFindings.degenerativeChange !== 'None' && img.structuredFindings.degenerativeChange !== 'Unknown' ? `• Degenerative Change: <span class="badge bg-warning">${img.structuredFindings.degenerativeChange}</span><br>` : ''}
-                        ${img.structuredFindings.cartilageDamage && img.structuredFindings.cartilageDamage !== 'None' && img.structuredFindings.cartilageDamage !== 'Unknown' ? `• Cartilage Damage: <span class="badge bg-warning">${img.structuredFindings.cartilageDamage}</span><br>` : ''}
-                        ${img.structuredFindings.labrumMeniscusStatus && img.structuredFindings.labrumMeniscusStatus !== 'Normal' && img.structuredFindings.labrumMeniscusStatus !== 'Unknown' ? `• Labrum/Meniscus: <span class="badge bg-warning">${img.structuredFindings.labrumMeniscusStatus}</span><br>` : ''}
-                        ${img.structuredFindings.tendonStatus && img.structuredFindings.tendonStatus !== 'Normal' && img.structuredFindings.tendonStatus !== 'Unknown' ? `• Tendon: <span class="badge bg-warning">${img.structuredFindings.tendonStatus}</span><br>` : ''}
-                        ${img.structuredFindings.ligamentStatus && img.structuredFindings.ligamentStatus !== 'Normal' && img.structuredFindings.ligamentStatus !== 'Unknown' ? `• Ligament: <span class="badge bg-warning">${img.structuredFindings.ligamentStatus}</span><br>` : ''}
-                        ${img.structuredFindings.effusion && img.structuredFindings.effusion !== 'None' && img.structuredFindings.effusion !== 'Unknown' ? `• Effusion: <span class="badge bg-info">${img.structuredFindings.effusion}</span><br>` : ''}
-                        ${img.structuredFindings.looseBodies ? `• <span class="badge bg-danger">Loose Bodies Present</span><br>` : ''}
-                        ${img.structuredFindings.nonunionOrDelayedUnion ? `• <span class="badge bg-danger">Nonunion/Delayed Union</span><br>` : ''}
-                        ${img.structuredFindings.avascularNecrosisConcern ? `• <span class="badge bg-danger">AVN Concern</span><br>` : ''}
-                        ${img.structuredFindings.postTraumaticArthritis ? `• <span class="badge bg-danger">Post-Traumatic Arthritis</span><br>` : ''}
-                        ${img.structuredFindings.stressReactionOrFracture ? `• <span class="badge bg-danger">Stress Reaction/Fracture</span><br>` : ''}
-                        ${img.structuredFindings.hardwareComplication && img.structuredFindings.hardwareComplication !== 'None' && img.structuredFindings.hardwareComplication !== 'Unknown' ? `• Hardware: <span class="badge bg-warning">${img.structuredFindings.hardwareComplication}</span><br>` : ''}
-                    ` : ''}
-                </div>
-                </div>
-            </div>
-            `).join('')}
-        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('')}
+            </tbody>
+        </table>
 
         <h6 class="mt-3">Missed Time / Availability</h6>
         <p>${player.facts.availability?.availabilityNarrative || 'No data'}</p>
@@ -1339,41 +1413,6 @@ function renderPlayerDashboard(playerId) {
         })()}
         </div>
     </div>
-
-    <div class="card mb-3">
-        <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>${player.name}</h4>
-            <button class="btn btn-sm btn-outline-secondary d-none" onclick="openEditFactsModal(${player.id})">
-                <i class="bi bi-pencil me-1"></i> Edit Facts
-            </button>
-
-        </div>
-        <div class="row">
-            <div class="col-md-4 text-center">
-            <div class="score-circle ${scoreInfo.class}">${player.score}</div>
-            <h5 class="mt-3"><span class="badge bg-${scoreInfo.badge}">${scoreInfo.label}</span></h5>
-            <div class="progress mt-2" style="height: 25px;">
-                <div class="progress-bar bg-${scoreInfo.badge}" role="progressbar" style="width: ${player.score}%">${player.score}%</div>
-            </div>
-            </div>
-            <div class="col-md-8">
-            <h6>Score Explanation</h6>
-            <ul class="list-unstyled">
-                ${explanation.length > 0 ? explanation.map(e => `<li><i class="bi bi-dash-circle text-danger me-1"></i> <strong>-${e.value.toFixed(1)} points:</strong> ${e.reason}</li>`).join('') : '<li class="text-muted">No deductions</li>'}
-            </ul>
-            ${player.scoreBreakdown ? `
-                <div class="mt-3">
-                    <small class="text-muted">
-                        <strong>Total Penalty:</strong> ${player.scoreBreakdown.totalPenalty.toFixed(1)} points<br>
-                        <strong>Recent Boost:</strong> ${player.scoreBreakdown.recentBoostMultiplier}x
-                    </small>
-                </div>
-            ` : ''}
-            </div>
-        </div>
-        </div>
-    </div>
     `;
     
     // Initialize Bootstrap popovers (for imaging findings if any remain)
@@ -1402,6 +1441,21 @@ window.toggleInjuryDetails = function(playerId, injuryIndex) {
 window.toggleSurgeryDetails = function(playerId, surgeryIndex) {
     const detailsRow = document.querySelector(`.surgery-details-${playerId}-${surgeryIndex}`);
     const chevron = document.querySelector(`.surgery-chevron-${playerId}-${surgeryIndex}`);
+    
+    if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+        detailsRow.style.display = 'table-row';
+        chevron.classList.remove('bi-chevron-down');
+        chevron.classList.add('bi-chevron-up');
+    } else {
+        detailsRow.style.display = 'none';
+        chevron.classList.remove('bi-chevron-up');
+        chevron.classList.add('bi-chevron-down');
+    }
+};
+
+window.toggleImagingDetails = function(playerId, imagingIndex) {
+    const detailsRow = document.querySelector(`.imaging-details-${playerId}-${imagingIndex}`);
+    const chevron = document.querySelector(`.imaging-chevron-${playerId}-${imagingIndex}`);
     
     if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
         detailsRow.style.display = 'table-row';
@@ -1461,12 +1515,17 @@ window.toggleAllDetails = function(playerId) {
     // Toggle all imaging findings
     const imagingFindings = player.facts.imagingFindings || [];
     imagingFindings.forEach((_, i) => {
-        const accordion = document.getElementById(`img${i}`);
-        if (accordion) {
-            if (shouldExpand && !accordion.classList.contains('show')) {
-                new bootstrap.Collapse(accordion, { show: true });
-            } else if (!shouldExpand && accordion.classList.contains('show')) {
-                new bootstrap.Collapse(accordion, { hide: true });
+        const detailsRow = document.querySelector(`.imaging-details-${playerId}-${i}`);
+        const chevron = document.querySelector(`.imaging-chevron-${playerId}-${i}`);
+        if (detailsRow) {
+            if (shouldExpand) {
+                detailsRow.style.display = 'table-row';
+                chevron.classList.remove('bi-chevron-down');
+                chevron.classList.add('bi-chevron-up');
+            } else {
+                detailsRow.style.display = 'none';
+                chevron.classList.remove('bi-chevron-up');
+                chevron.classList.add('bi-chevron-down');
             }
         }
     });
@@ -1514,6 +1573,18 @@ window.downloadPlayerReport = function(playerId) {
                 height: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
+            }
+            #playerDashboard::before {
+                content: "Medical Report: ${player.name}";
+                visibility: visible;
+                display: block;
+                font-size: 18pt;
+                font-weight: bold;
+                text-align: center;
+                padding: 15px 0;
+                margin-bottom: 15px;
+                border-bottom: 2px solid #333;
+                color: #000;
             }
             #playerDashboard {
                 visibility: visible;
