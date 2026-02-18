@@ -710,7 +710,8 @@ Important:
 - Use the exact enum values specified (e.g., "Major" not "major")
 - Fill in all required fields with best estimates from documents
 - CRITICAL: Ensure summaryCounts values match the actual array lengths (e.g., surgeriesTotal = surgeries.length)
-- Set flags to true ONLY when there is clear evidence in the imaging findings or medical history`;
+- Set flags to true ONLY when there is clear evidence in the imaging findings or medical history
+- Must and must return the valid json`;
 
     try {
         const response = await fetch(`${provider.baseUrl}/chat/completions`, {
