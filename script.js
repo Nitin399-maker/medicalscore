@@ -594,9 +594,13 @@ Extract and return ONLY a valid JSON object with the following structure (no mar
       "injuryName": "string",
       "type": "Sprain|Strain|Tear|Fracture|Dislocation|Subluxation|Tendinopathy|Contusion|Other",
       "typeReason": "Brief explanation of why this type was chosen (2-3 sentences)",
+      "typeSourceDoc": "Document filename where type information was found",
+      "typeSourceQuote": "Exact sentence or phrase from document supporting this type classification",
       "side": "Left|Right|Bilateral|NA",
       "severity": "Major|Moderate|Minor",
       "severityReason": "Brief explanation of why this severity level was assigned based on impact, time lost, structural damage, or career implications (2-3 sentences)",
+      "severitySourceDoc": "Document filename where severity information was found",
+      "severitySourceQuote": "Exact sentence or phrase from document supporting this severity classification",
       "mechanism": "Contact|NonContact|Overuse|Unknown",
       "recurrenceGroupId": "string-or-null",
       "treatment": {
@@ -611,6 +615,8 @@ Extract and return ONLY a valid JSON object with the following structure (no mar
       },
       "currentStatus": "Asymptomatic|Symptomatic|Recovered|Ongoing|Unknown",
       "statusReason": "Brief explanation of current status based on documented recovery, symptoms, or limitations (2-3 sentences)",
+      "statusSourceDoc": "Document filename where status information was found",
+      "statusSourceQuote": "Exact sentence or phrase from document supporting this status",
       "notes": "string"
     }
   ],
@@ -621,6 +627,8 @@ Extract and return ONLY a valid JSON object with the following structure (no mar
       "procedure": "string",
       "procedureCategory": "Repair|Reconstruction|Debridement|Meniscectomy|ORIF|Tenex|Other",
       "procedureCategoryReason": "Brief explanation of why this procedure category was chosen based on the surgical technique and intervention type (2-3 sentences)",
+      "procedureCategorySourceDoc": "Document filename where procedure information was found",
+      "procedureCategorySourceQuote": "Exact sentence or phrase from document describing the procedure",
       "side": "Left|Right|Bilateral|NA",
       "majorJoint": true,
       "revision": false,
@@ -629,6 +637,8 @@ Extract and return ONLY a valid JSON object with the following structure (no mar
         "returnedToPlay": true,
         "residualSymptoms": "None|Mild|Moderate|Severe|Unknown",
         "outcomeReason": "Brief explanation of the outcome assessment based on recovery progress, return to play status, and any documented limitations (2-3 sentences)",
+        "outcomeSourceDoc": "Document filename where outcome information was found",
+        "outcomeSourceQuote": "Exact sentence or phrase from document describing the outcome",
         "currentLimitation": "None|WeightRoomMods|Brace|SnapCount|Unknown"
       }
     }
@@ -1026,10 +1036,20 @@ function renderPlayerDashboard(playerId) {
     const dashboard = document.getElementById('playerDashboard');
     dashboard.innerHTML = `
     <div class="card mb-3">
-        <div class="card-header"><h5>Critical Information</h5></div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Critical Information</h5>
+            <div>
+                <button class="btn btn-sm btn-primary me-2" id="toggleDetailsBtn-${playerId}" onclick="toggleAllDetails(${playerId})">
+                    <i class="bi bi-arrows-expand me-1" id="toggleIcon-${playerId}"></i> Toggle
+                </button>
+                <button class="btn btn-sm btn-success" onclick="downloadPlayerReport(${playerId})">
+                    <i class="bi bi-download me-1"></i> Download
+                </button>
+            </div>
+        </div>
         <div class="card-body">
         <h6>Injuries</h6>
-        <table class="table table-sm table-striped">
+        <table class="table table-sm">
             <thead><tr>
                 <th class="sortable-header" onclick="sortPlayerTable(${playerId}, 'injuries', 'injury')" style="cursor: pointer;">
                     Injury ${player.sortState.injuries.column === 'injury' ? (player.sortState.injuries.direction === 'asc' ? '▲' : '▼') : ''}
@@ -1046,44 +1066,58 @@ function renderPlayerDashboard(playerId) {
                 <th class="sortable-header" onclick="sortPlayerTable(${playerId}, 'injuries', 'status')" style="cursor: pointer;">
                     Status ${player.sortState.injuries.column === 'status' ? (player.sortState.injuries.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
+                <th style="width: 40px;"></th>
             </tr></thead>
             <tbody>
             ${sortedInjuries.map((inj, i) => `
-                <tr>
-                <td>
-                    <span class="hover-info" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" 
-                          data-bs-content="${inj.typeReason ? inj.typeReason.replace(/"/g, '&quot;') : 'No additional information'}">
-                        ${inj.injuryName || 'Unknown'}
-                        ${inj.typeReason ? '<i class="bi bi-info-circle text-primary ms-1" style="font-size: 0.85rem;"></i>' : ''}
-                    </span>
-                </td>
-                <td>${inj.bodyRegion || 'Unknown'} ${inj.side !== 'NA' ? `(${inj.side})` : ''}</td>
-                <td>${formatDate(inj.date)}</td>
-                <td>
-                    <span class="hover-info" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" 
-                          data-bs-content="${inj.severityReason ? inj.severityReason.replace(/"/g, '&quot;') : 'No severity explanation available'}">
+                <tr class="injury-row-${playerId}-${i}" style="cursor: pointer; border-bottom: 1px solid #dee2e6;" onclick="toggleInjuryDetails(${playerId}, ${i})">
+                    <td>${inj.injuryName || 'Unknown'}</td>
+                    <td>${inj.bodyRegion || 'Unknown'} ${inj.side !== 'NA' ? `(${inj.side})` : ''}</td>
+                    <td>${formatDate(inj.date)}</td>
+                    <td>
                         <span class="badge bg-${inj.severity === 'Major' ? 'danger' : inj.severity === 'Moderate' ? 'warning' : 'secondary'}">
                             ${inj.severity || 'Unknown'}
                         </span>
-                        ${inj.severityReason ? '<i class="bi bi-info-circle ms-1" style="font-size: 0.75rem;"></i>' : ''}
-                    </span>
-                </td>
-                <td>
-                    <span class="hover-info" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" 
-                          data-bs-content="${inj.statusReason ? inj.statusReason.replace(/"/g, '&quot;') : 'No status explanation available'}">
+                    </td>
+                    <td>
                         <span class="badge bg-${inj.currentStatus === 'Recovered' || inj.currentStatus === 'Asymptomatic' ? 'success' : 'warning'}">
                             ${inj.currentStatus || 'Unknown'}
                         </span>
-                        ${inj.statusReason ? '<i class="bi bi-info-circle ms-1" style="font-size: 0.75rem;"></i>' : ''}
-                    </span>
-                </td>
+                    </td>
+                    <td class="text-center">
+                        <i class="bi bi-chevron-down injury-chevron-${playerId}-${i}" style="font-size: 0.85rem;"></i>
+                    </td>
+                </tr>
+                <tr class="injury-details-${playerId}-${i}" style="display: none; background-color: #f8f9fa;">
+                    <td colspan="6" class="p-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6 class="text-primary"><i class="bi bi-tag me-1"></i>Type Information</h6>
+                                ${inj.typeReason ? `<p class="mb-2" style="font-size: 1.05rem;"><strong>Reason:</strong> ${inj.typeReason}</p>` : '<p class="text-muted">No type reason available</p>'}
+                                ${inj.typeSourceDoc ? `<p class="mb-1" style="font-size: 1rem;"><strong>Document:</strong> <span class="badge bg-secondary">${inj.typeSourceDoc}</span></p>` : ''}
+                                ${inj.typeSourceQuote ? `<p class="mb-0" style="font-size: 1rem;"><strong>Quote:</strong> <em>"${inj.typeSourceQuote}"</em></p>` : ''}
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Severity Information</h6>
+                                ${inj.severityReason ? `<p class="mb-2" style="font-size: 1.05rem;"><strong>Reason:</strong> ${inj.severityReason}</p>` : '<p class="text-muted">No severity reason available</p>'}
+                                ${inj.severitySourceDoc ? `<p class="mb-1" style="font-size: 1rem;"><strong>Document:</strong> <span class="badge bg-secondary">${inj.severitySourceDoc}</span></p>` : ''}
+                                ${inj.severitySourceQuote ? `<p class="mb-0" style="font-size: 1rem;"><strong>Quote:</strong> <em>"${inj.severitySourceQuote}"</em></p>` : ''}
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-success"><i class="bi bi-activity me-1"></i>Status Information</h6>
+                                ${inj.statusReason ? `<p class="mb-2" style="font-size: 1.05rem;"><strong>Reason:</strong> ${inj.statusReason}</p>` : '<p class="text-muted">No status reason available</p>'}
+                                ${inj.statusSourceDoc ? `<p class="mb-1" style="font-size: 1rem;"><strong>Document:</strong> <span class="badge bg-secondary">${inj.statusSourceDoc}</span></p>` : ''}
+                                ${inj.statusSourceQuote ? `<p class="mb-0" style="font-size: 1rem;"><strong>Quote:</strong> <em>"${inj.statusSourceQuote}"</em></p>` : ''}
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             `).join('')}
             </tbody>
         </table>
 
         <h6 class="mt-3">Surgeries / Procedures</h6>
-        <table class="table table-sm table-striped">
+        <table class="table table-sm">
             <thead><tr>
                 <th class="sortable-header" onclick="sortPlayerTable(${playerId}, 'surgeries', 'procedure')" style="cursor: pointer;">
                     Procedure ${player.sortState.surgeries.column === 'procedure' ? (player.sortState.surgeries.direction === 'asc' ? '▲' : '▼') : ''}
@@ -1100,31 +1134,45 @@ function renderPlayerDashboard(playerId) {
                 <th class="sortable-header" onclick="sortPlayerTable(${playerId}, 'surgeries', 'outcome')" style="cursor: pointer;">
                     Outcome ${player.sortState.surgeries.column === 'outcome' ? (player.sortState.surgeries.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
+                <th style="width: 40px;"></th>
             </tr></thead>
             <tbody>
-            ${sortedSurgeries.map(surg => `
-                <tr>
-                <td>${surg.procedure || 'Unknown'}</td>
-                <td>${surg.bodyRegion || 'Unknown'} ${surg.side !== 'NA' ? `(${surg.side})` : ''}</td>
-                <td>${formatDate(surg.date)}</td>
-                <td>
-                    <span class="hover-info" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" 
-                          data-bs-content="${surg.procedureCategoryReason ? surg.procedureCategoryReason.replace(/"/g, '&quot;') : 'No type explanation available'}">
+            ${sortedSurgeries.map((surg, i) => `
+                <tr class="surgery-row-${playerId}-${i}" style="cursor: pointer; border-bottom: 1px solid #dee2e6;" onclick="toggleSurgeryDetails(${playerId}, ${i})">
+                    <td>${surg.procedure || 'Unknown'}</td>
+                    <td>${surg.bodyRegion || 'Unknown'} ${surg.side !== 'NA' ? `(${surg.side})` : ''}</td>
+                    <td>${formatDate(surg.date)}</td>
+                    <td>
                         <span class="badge bg-${surg.majorJoint ? 'danger' : 'info'}">
                             ${surg.procedureCategory || 'Unknown'}
                         </span>
-                        ${surg.procedureCategoryReason ? '<i class="bi bi-info-circle ms-1" style="font-size: 0.75rem;"></i>' : ''}
-                    </span>
-                </td>
-                <td>
-                    <span class="hover-info" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" 
-                          data-bs-content="${surg.outcome?.outcomeReason ? surg.outcome.outcomeReason.replace(/"/g, '&quot;') : 'No outcome explanation available'}">
+                    </td>
+                    <td>
                         <span class="badge bg-${surg.outcome?.returnedToPlay ? 'success' : 'warning'}">
                             ${surg.outcome?.residualSymptoms || 'Unknown'}
                         </span>
-                        ${surg.outcome?.outcomeReason ? '<i class="bi bi-info-circle ms-1" style="font-size: 0.75rem;"></i>' : ''}
-                    </span>
-                </td>
+                    </td>
+                    <td class="text-center">
+                        <i class="bi bi-chevron-down surgery-chevron-${playerId}-${i}" style="font-size: 0.85rem;"></i>
+                    </td>
+                </tr>
+                <tr class="surgery-details-${playerId}-${i}" style="display: none; background-color: #f8f9fa;">
+                    <td colspan="6" class="p-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary"><i class="bi bi-scissors me-1"></i>Procedure Category Information</h6>
+                                ${surg.procedureCategoryReason ? `<p class="mb-2" style="font-size: 1.05rem;"><strong>Reason:</strong> ${surg.procedureCategoryReason}</p>` : '<p class="text-muted">No procedure category reason available</p>'}
+                                ${surg.procedureCategorySourceDoc ? `<p class="mb-1" style="font-size: 1rem;"><strong>Document:</strong> <span class="badge bg-secondary">${surg.procedureCategorySourceDoc}</span></p>` : ''}
+                                ${surg.procedureCategorySourceQuote ? `<p class="mb-0" style="font-size: 1rem;"><strong>Quote:</strong> <em>"${surg.procedureCategorySourceQuote}"</em></p>` : ''}
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-success"><i class="bi bi-clipboard-check me-1"></i>Outcome Information</h6>
+                                ${surg.outcome?.outcomeReason ? `<p class="mb-2" style="font-size: 1.05rem;"><strong>Reason:</strong> ${surg.outcome.outcomeReason}</p>` : '<p class="text-muted">No outcome reason available</p>'}
+                                ${surg.outcome?.outcomeSourceDoc ? `<p class="mb-1" style="font-size: 1rem;"><strong>Document:</strong> <span class="badge bg-secondary">${surg.outcome.outcomeSourceDoc}</span></p>` : ''}
+                                ${surg.outcome?.outcomeSourceQuote ? `<p class="mb-0" style="font-size: 1rem;"><strong>Quote:</strong> <em>"${surg.outcome.outcomeSourceQuote}"</em></p>` : ''}
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             `).join('')}
             </tbody>
@@ -1327,12 +1375,295 @@ function renderPlayerDashboard(playerId) {
     </div>
     `;
     
-    // Initialize Bootstrap popovers
+    // Initialize Bootstrap popovers (for imaging findings if any remain)
     setTimeout(() => {
         const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
         [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
     }, 100);
 }
+
+// Make functions globally accessible
+window.toggleInjuryDetails = function(playerId, injuryIndex) {
+    const detailsRow = document.querySelector(`.injury-details-${playerId}-${injuryIndex}`);
+    const chevron = document.querySelector(`.injury-chevron-${playerId}-${injuryIndex}`);
+    
+    if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+        detailsRow.style.display = 'table-row';
+        chevron.classList.remove('bi-chevron-down');
+        chevron.classList.add('bi-chevron-up');
+    } else {
+        detailsRow.style.display = 'none';
+        chevron.classList.remove('bi-chevron-up');
+        chevron.classList.add('bi-chevron-down');
+    }
+};
+
+window.toggleSurgeryDetails = function(playerId, surgeryIndex) {
+    const detailsRow = document.querySelector(`.surgery-details-${playerId}-${surgeryIndex}`);
+    const chevron = document.querySelector(`.surgery-chevron-${playerId}-${surgeryIndex}`);
+    
+    if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+        detailsRow.style.display = 'table-row';
+        chevron.classList.remove('bi-chevron-down');
+        chevron.classList.add('bi-chevron-up');
+    } else {
+        detailsRow.style.display = 'none';
+        chevron.classList.remove('bi-chevron-up');
+        chevron.classList.add('bi-chevron-down');
+    }
+};
+
+window.toggleAllDetails = function(playerId) {
+    const player = players.find(p => p.id === playerId);
+    if (!player) return;
+    
+    // Check if any detail is currently expanded to determine toggle direction
+    const firstInjuryDetails = document.querySelector(`.injury-details-${playerId}-0`);
+    const shouldExpand = !firstInjuryDetails || firstInjuryDetails.style.display === 'none' || firstInjuryDetails.style.display === '';
+    
+    // Toggle all injury details
+    const injuries = player.facts.injuries || [];
+    injuries.forEach((_, i) => {
+        const detailsRow = document.querySelector(`.injury-details-${playerId}-${i}`);
+        const chevron = document.querySelector(`.injury-chevron-${playerId}-${i}`);
+        if (detailsRow) {
+            if (shouldExpand) {
+                detailsRow.style.display = 'table-row';
+                chevron.classList.remove('bi-chevron-down');
+                chevron.classList.add('bi-chevron-up');
+            } else {
+                detailsRow.style.display = 'none';
+                chevron.classList.remove('bi-chevron-up');
+                chevron.classList.add('bi-chevron-down');
+            }
+        }
+    });
+    
+    // Toggle all surgery details
+    const surgeries = player.facts.surgeries || [];
+    surgeries.forEach((_, i) => {
+        const detailsRow = document.querySelector(`.surgery-details-${playerId}-${i}`);
+        const chevron = document.querySelector(`.surgery-chevron-${playerId}-${i}`);
+        if (detailsRow) {
+            if (shouldExpand) {
+                detailsRow.style.display = 'table-row';
+                chevron.classList.remove('bi-chevron-down');
+                chevron.classList.add('bi-chevron-up');
+            } else {
+                detailsRow.style.display = 'none';
+                chevron.classList.remove('bi-chevron-up');
+                chevron.classList.add('bi-chevron-down');
+            }
+        }
+    });
+    
+    // Toggle all imaging findings
+    const imagingFindings = player.facts.imagingFindings || [];
+    imagingFindings.forEach((_, i) => {
+        const accordion = document.getElementById(`img${i}`);
+        if (accordion) {
+            if (shouldExpand && !accordion.classList.contains('show')) {
+                new bootstrap.Collapse(accordion, { show: true });
+            } else if (!shouldExpand && accordion.classList.contains('show')) {
+                new bootstrap.Collapse(accordion, { hide: true });
+            }
+        }
+    });
+    
+    // Update button icon
+    const toggleIcon = document.getElementById(`toggleIcon-${playerId}`);
+    if (toggleIcon) {
+        if (shouldExpand) {
+            toggleIcon.classList.remove('bi-arrows-expand');
+            toggleIcon.classList.add('bi-arrows-collapse');
+        } else {
+            toggleIcon.classList.remove('bi-arrows-collapse');
+            toggleIcon.classList.add('bi-arrows-expand');
+        }
+    }
+};
+
+window.downloadPlayerReport = function(playerId) {
+    const player = players.find(p => p.id === playerId);
+    if (!player) return;
+    
+    // Don't include compare section in PDF
+    const hasCompareData = false;
+    
+    // Don't toggle - print exactly as displayed on UI
+    
+    // Create a style element for print-specific styles
+    const printStyle = document.createElement('style');
+    printStyle.id = 'print-styles';
+    printStyle.innerHTML = `
+        @media print {
+            @page {
+                size: letter landscape;
+                margin: 0.25in 0.3in;
+            }
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            .navbar, .nav-tabs, #uploadProgress, .nav, header, nav {
+                display: none !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #playerDashboard {
+                visibility: visible;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100%;
+                max-width: 100%;
+                margin: 0 !important;
+            }
+            #playerDashboard * {
+                visibility: visible;
+            }
+            .container, .container-fluid {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin: 0 !important;
+            }
+            ${hasCompareData ? `
+            #compareSection {
+                visibility: visible !important;
+                position: relative;
+                page-break-before: always;
+                margin-top: 0;
+                width: 100%;
+                clear: both;
+            }
+            #compareSection * {
+                visibility: visible !important;
+            }
+            #compareSection .card {
+                margin-top: 0;
+            }
+            ` : `
+            #compareSection {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            `}
+            .btn, button, .sortable i, .form-check, .bi-arrow-down-up {
+                display: none !important;
+            }
+            .card {
+                page-break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                margin-bottom: 15px;
+            }
+            .card-header {
+                background-color: #f8f9fa !important;
+                padding: 10px 15px !important;
+            }
+            .card-body {
+                padding: 15px !important;
+            }
+            table {
+                width: 100%;
+                font-size: 9pt;
+                border-collapse: collapse;
+            }
+            thead {
+                display: table-header-group;
+            }
+            tbody {
+                display: table-row-group;
+            }
+            /* Keep injury/surgery rows with their detail rows */
+            tr[class*="-row-"] {
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            tr[class*="-details-"] {
+                page-break-before: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            /* General row handling */
+            tr {
+                page-break-inside: avoid;
+            }
+            td, th {
+                padding: 6px !important;
+                font-size: 9pt;
+            }
+            .accordion-collapse {
+                display: block !important;
+                height: auto !important;
+            }
+            .accordion-button {
+                padding: 8px !important;
+            }
+            .accordion-button::after {
+                display: none;
+            }
+            .badge {
+                padding: 3px 6px;
+                font-size: 8pt;
+            }
+            .timeline-item {
+                page-break-inside: avoid;
+                font-size: 9pt;
+                margin-bottom: 8px;
+            }
+            h6 {
+                font-size: 11pt;
+                margin-top: 10px;
+                margin-bottom: 8px;
+            }
+            h4 {
+                font-size: 13pt;
+                margin-bottom: 10px;
+            }
+            .score-circle {
+                width: 100px;
+                height: 100px;
+                font-size: 2rem;
+            }
+            /* Comparison table specific styles */
+            .comparison-table {
+                width: 100%;
+                margin-top: 10px;
+            }
+            .comparison-table td {
+                vertical-align: middle;
+            }
+            .table-responsive {
+                overflow: visible !important;
+            }
+        }
+    `;
+    
+    // Add print styles to document
+    document.head.appendChild(printStyle);
+    
+    // Set document title for the PDF filename
+    const originalTitle = document.title;
+    document.title = `${player.name}_Medical_Report${hasCompareData ? '_with_Comparison' : ''}`;
+    
+    // Trigger print dialog
+    window.print();
+    
+    // Restore original title and remove print styles after a short delay
+    setTimeout(() => {
+        document.title = originalTitle;
+        const styleElement = document.getElementById('print-styles');
+        if (styleElement) {
+            styleElement.remove();
+        }
+    }, 1000);
+};
 
 function sortPlayerTable(playerId, tableType, column) {
     const player = players.find(p => p.id === playerId);
