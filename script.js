@@ -959,7 +959,8 @@ function renderPlayerDashboard(playerId) {
     if (!player.sortState) {
         player.sortState = {
             injuries: { column: 'date', direction: 'desc' },
-            surgeries: { column: 'date', direction: 'desc' }
+            surgeries: { column: 'date', direction: 'desc' },
+            imaging: { column: 'date', direction: 'desc' }
         };
     }
 
@@ -1024,6 +1025,33 @@ function renderPlayerDashboard(playerId) {
             case 'outcome':
                 aVal = (a.outcome?.residualSymptoms || 'Unknown').toLowerCase();
                 bVal = (b.outcome?.residualSymptoms || 'Unknown').toLowerCase();
+                break;
+            default:
+                return 0;
+        }
+        
+        if (aVal < bVal) return state.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return state.direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Sort imaging findings
+    const sortedImaging = [...(player.facts.imagingFindings || [])].sort((a, b) => {
+        const state = player.sortState.imaging;
+        let aVal, bVal;
+        
+        switch(state.column) {
+            case 'date':
+                aVal = new Date(a.date || '1900-01-01');
+                bVal = new Date(b.date || '1900-01-01');
+                break;
+            case 'modality':
+                aVal = (a.modality || 'Unknown').toLowerCase();
+                bVal = (b.modality || 'Unknown').toLowerCase();
+                break;
+            case 'bodyRegion':
+                aVal = (a.bodyRegion || 'Unknown').toLowerCase();
+                bVal = (b.bodyRegion || 'Unknown').toLowerCase();
                 break;
             default:
                 return 0;
@@ -1228,13 +1256,20 @@ function renderPlayerDashboard(playerId) {
         <h6 class="mt-3">Imaging Findings</h6>
         <table class="table table-sm">
             <thead><tr>
-                <th>Modality</th>
-                <th>Body Region</th>
+                <th class="sortable-header" onclick="sortPlayerTable(${playerId}, 'imaging', 'modality')" style="cursor: pointer;">
+                    Modality ${player.sortState.imaging.column === 'modality' ? (player.sortState.imaging.direction === 'asc' ? '▲' : '▼') : ''}
+                </th>
+                <th class="sortable-header" onclick="sortPlayerTable(${playerId}, 'imaging', 'bodyRegion')" style="cursor: pointer;">
+                    Body Region ${player.sortState.imaging.column === 'bodyRegion' ? (player.sortState.imaging.direction === 'asc' ? '▲' : '▼') : ''}
+                </th>
+                <th class="sortable-header" onclick="sortPlayerTable(${playerId}, 'imaging', 'date')" style="cursor: pointer;">
+                    Date ${player.sortState.imaging.column === 'date' ? (player.sortState.imaging.direction === 'asc' ? '▲' : '▼') : ''}
+                </th>
                 <th>Structured Findings</th>
                 <th style="width: 40px;"></th>
             </tr></thead>
             <tbody>
-            ${(player.facts.imagingFindings || []).map((img, i) => {
+            ${sortedImaging.map((img, i) => {
                 const sf = img.structuredFindings || {};
                 const findings = [];
                 if (sf.degenerativeChange && sf.degenerativeChange !== 'None' && sf.degenerativeChange !== 'Unknown') findings.push('Degenerative');
@@ -1254,14 +1289,14 @@ function renderPlayerDashboard(playerId) {
                 <tr class="imaging-row-${playerId}-${i}" style="cursor: pointer; border-bottom: 1px solid #dee2e6;" onclick="toggleImagingDetails(${playerId}, ${i})">
                     <td>${img.modality || 'Unknown'}</td>
                     <td>${img.bodyRegion || 'Unknown'} ${img.side !== 'NA' ? `(${img.side})` : ''}</td>
+                    <td>${formatDate(img.date)}</td>
                     <td><small>${findingsText}</small></td>
                     <td class="text-center">
                         <i class="bi bi-chevron-down imaging-chevron-${playerId}-${i}" style="font-size: 0.85rem;"></i>
                     </td>
                 </tr>
                 <tr class="imaging-details-${playerId}-${i}" style="display: none; background-color: #f8f9fa;">
-                    <td colspan="4" class="p-3">
-                        <p class="mb-2"><strong>Date:</strong> ${formatDate(img.date)}</p>
+                    <td colspan="5" class="p-3">
                         <div class="row">
                             <div class="col-md-12">
                                 <p class="mb-2"><strong>Source:</strong> ${img.sourceDoc || 'Unknown'}</p>
