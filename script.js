@@ -7,6 +7,7 @@ import { bootstrapAlert } from "bootstrap-alert";
 let players = [];
 let currentPlayerView = null;
 let selectedComparePlayers = new Set();
+let demoPlayers = [];
 
 // ========== LLM CONFIGURATION ==========
 let provider = null;
@@ -1102,6 +1103,9 @@ function renderPlayerDashboard(playerId) {
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Critical Information</h5>
             <div>
+                <button class="btn btn-sm btn-warning me-2" onclick="saveDemoPlayer(${playerId})">
+                    <i class="bi bi-save me-1"></i> Save as Demo
+                </button>
                 <button class="btn btn-sm btn-primary me-2" id="toggleDetailsBtn-${playerId}" onclick="toggleAllDetails(${playerId})">
                     <i class="bi bi-arrows-expand me-1" id="toggleIcon-${playerId}"></i> Expand details
                 </button>
@@ -2176,6 +2180,237 @@ document.getElementById('exportPDF').addEventListener('click', (e) => {
     }
 });
 
+// ========== DEMO FUNCTIONS ==========
+function saveDemoPlayer(playerId) {
+    const player = players.find(p => p.id === playerId);
+    if (!player) {
+        showToast('Player not found', 'danger');
+        return;
+    }
+    
+    try {
+        const demoData = {
+            name: player.name,
+            draftYear: player.draftYear,
+            handedness: player.handedness,
+            facts: player.facts,
+            score: player.score,
+            scoreBreakdown: player.scoreBreakdown,
+            documents: player.documents || [],
+            savedAt: new Date().toISOString()
+        };
+        
+        // Create filename from player name
+        const filename = `${player.name.replace(/\s+/g, '_').toLowerCase()}_demo.json`;
+        
+        // Create blob and download
+        const blob = new Blob([JSON.stringify(demoData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast(`Demo JSON downloaded: ${filename}. Place it in the 'demos' folder.`, 'success');
+    } catch (error) {
+        console.error('Error saving demo:', error);
+        showToast('Error saving demo: ' + error.message, 'danger');
+    }
+}
+
+async function loadDemoFiles() {
+    try {
+        demoPlayers = [];
+        
+        // Try to fetch the demos directory listing
+        // This works with a local server or when using File System Access API
+        try {
+            // First, try to load a manifest file if it exists
+            const manifestResponse = await fetch('demos/manifest.json');
+            if (manifestResponse.ok) {
+                const manifest = await manifestResponse.json();
+                const demoFiles = manifest.files || [];
+                
+                for (const filename of demoFiles) {
+                    try {
+                        const response = await fetch(`demos/${filename}`);
+                        if (response.ok) {
+                            const demoData = await response.json();
+                            demoPlayers.push(demoData);
+                        }
+                    } catch (err) {
+                        console.log(`Could not load demo file: ${filename}`);
+                    }
+                }
+            } else {
+                // If no manifest, try common demo file patterns
+                const commonPatterns = [
+                    'sample_player_demo.json',
+                    'demo1.json',
+                    'demo2.json',
+                    'demo3.json'
+                ];
+                
+                // Try to load any JSON files that exist
+                for (let i = 1; i <= 20; i++) {
+                    try {
+                        const response = await fetch(`demos/player${i}_demo.json`);
+                        if (response.ok) {
+                            const demoData = await response.json();
+                            demoPlayers.push(demoData);
+                        }
+                    } catch (err) {
+                        // File doesn't exist, continue
+                    }
+                }
+                
+                // Also try common patterns
+                for (const pattern of commonPatterns) {
+                    try {
+                        const response = await fetch(`demos/${pattern}`);
+                        if (response.ok) {
+                            const demoData = await response.json();
+                            // Check if not already added
+                            if (!demoPlayers.find(p => p.name === demoData.name)) {
+                                demoPlayers.push(demoData);
+                            }
+                        }
+                    } catch (err) {
+                        // File doesn't exist, continue
+                    }
+                }
+            }
+        } catch (err) {
+            console.log('No demos directory or manifest found');
+        }
+        
+        renderDemoCards();
+    } catch (error) {
+        console.error('Error loading demo files:', error);
+        renderDemoCards(); // Still render to show the "no demos" message
+    }
+}
+
+function renderDemoCards() {
+    const container = document.getElementById('demoCardsContainer');
+    if (!container) return;
+    
+    if (demoPlayers.length === 0) {
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    No demo players available. Upload and analyze a player, then click "Save as Demo" to download a JSON file.
+                    Place the JSON file in the <code>demos/</code> folder and refresh the page.
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = demoPlayers.map((demo, index) => {
+        const scoreInfo = getScoreLabel(demo.score || 100);
+        const counts = demo.facts?.summaryCounts || {};
+        
+        return `
+            <div class="col-md-4 col-lg-3 mb-3">
+                <div class="card demo-card h-100 shadow-sm" style="cursor: pointer; transition: all 0.2s;" 
+                     onclick="loadDemoPlayer(${index})"
+                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.2)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0 fw-bold">${demo.name}</h6>
+                            <span class="badge bg-${scoreInfo.badge}">${demo.score || 'N/A'}</span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-calendar me-1"></i>${demo.draftYear || 'N/A'}
+                        </p>
+                        <div class="small">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">Surgeries:</span>
+                                <span class="fw-semibold">${counts.surgeriesTotal || 0}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">Missed Games:</span>
+                                <span class="fw-semibold">${counts.missedGamesTotal || 0}</span>
+                            </div>
+                            ${counts.concussionsTotal > 0 ? `
+                                <div class="mt-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Concussion
+                                    </span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 pt-0">
+                        <small class="text-muted">
+                            <i class="bi bi-play-circle me-1"></i>Click to load
+                        </small>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function loadDemoPlayer(demoIndex) {
+    try {
+        const demoData = demoPlayers[demoIndex];
+        if (!demoData) {
+            showToast('Demo data not found', 'danger');
+            return;
+        }
+        
+        // Check if player already exists
+        let player = players.find(p => p.name === demoData.name);
+        
+        if (player) {
+            // Update existing player
+            player.draftYear = demoData.draftYear;
+            player.handedness = demoData.handedness;
+            player.facts = demoData.facts;
+            player.score = demoData.score;
+            player.scoreBreakdown = demoData.scoreBreakdown;
+            player.documents = demoData.documents || [];
+        } else {
+            // Create new player
+            player = {
+                id: players.length + 1,
+                name: demoData.name,
+                draftYear: demoData.draftYear,
+                handedness: demoData.handedness,
+                facts: demoData.facts,
+                score: demoData.score,
+                scoreBreakdown: demoData.scoreBreakdown,
+                documents: demoData.documents || []
+            };
+            players.push(player);
+        }
+        
+        // Update UI
+        renderPlayerSelector();
+        renderCompareCheckboxes();
+        
+        // Select the demo player
+        document.getElementById('playerSelector').value = player.id;
+        currentPlayerView = player.id;
+        renderPlayerDashboard(player.id);
+        
+        // Scroll to player dashboard
+        document.getElementById('playerDashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        showToast(`Demo player "${demoData.name}" loaded successfully!`);
+    } catch (error) {
+        console.error('Error loading demo:', error);
+        showToast('Error loading demo: ' + error.message, 'danger');
+    }
+}
+
 // ========== TOAST ==========
 function showToast(message, type = 'success') {
     const toastContainer = document.createElement('div');
@@ -2202,8 +2437,15 @@ document.getElementById('model-select').addEventListener('change', (e) => {
 });
 
 // ========== INIT ==========
+// Load demo files on page load
+loadDemoFiles();
+
 renderPlayerSelector();
 renderCompareCheckboxes();
+
+// Make demo functions globally accessible
+window.saveDemoPlayer = saveDemoPlayer;
+window.loadDemoPlayer = loadDemoPlayer;
 
 
 

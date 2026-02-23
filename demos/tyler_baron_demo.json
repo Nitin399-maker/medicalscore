@@ -1,0 +1,814 @@
+{
+  "name": "Tyler Baron",
+  "draftYear": 2025,
+  "handedness": "Unknown",
+  "facts": {
+    "player": {
+      "name": "Tyler Baron",
+      "draftYear": 2025,
+      "handedness": "Unknown"
+    },
+    "summaryCounts": {
+      "surgeriesTotal": 5,
+      "surgeriesMajorJoint": 5,
+      "surgeriesNonMajorJoint": 0,
+      "recurrenceTotal": 3,
+      "missedGamesTotal": 0,
+      "concussionsTotal": 1,
+      "cervicalNeurologicEventsTotal": 1,
+      "majorInjuriesTotal": 2,
+      "moderateInjuriesTotal": 2,
+      "minorInjuriesTotal": 5
+    },
+    "flags": {
+      "cartilageDegeneration": true,
+      "looseBodies": true,
+      "effusionRecurrentOrModerate": true,
+      "osteoarthritisOrArthrosis": true,
+      "stressFractureHistory": false,
+      "fractureNonunionOrDelayedUnion": false,
+      "avascularNecrosisConcern": false,
+      "hardwareFailureOrBrokenImplant": false,
+      "recurrentInstability": true,
+      "recurrentMuscleStrain": true
+    },
+    "availability": {
+      "missedGamesBySeason": [],
+      "missedPracticeWeeksTotal": 5,
+      "limitedParticipationWeeksTotal": 0,
+      "currentRestrictions": "None",
+      "availabilityNarrative": "Tyler Baron had no missed games throughout his college career despite multiple surgeries and injuries. He missed 3-4 days of practice for concussion in 2020, approximately 1.5 weeks of practice for two separate hamstring strains in 2023 and 2024, but returned to play all games. He wore a shoulder harness prophylactically for 4 games following his February 2024 shoulder surgery but played without issue for the remainder of the season."
+    },
+    "injuries": [
+      {
+        "date": "2020-01-01",
+        "season": 2020,
+        "bodyRegion": "Head",
+        "structure": "Brain",
+        "injuryName": "Concussion",
+        "type": "Other",
+        "typeReason": "Concussion is a traumatic brain injury resulting from impact forces. It is classified as 'Other' because it does not fit the typical musculoskeletal injury categories like sprain, strain, or tear.",
+        "typeSourceDoc": "GenMed Baron Tyler 103180246_78985818_Dict.pdf",
+        "typeSourceQuote": "He has a history of 1 concussion in 2020, where he missed 4 to 5 days, and did have a CT scan at the time that was normal.",
+        "side": "NA",
+        "severity": "Minor",
+        "severityReason": "Single isolated concussion with only 4-5 days of time lost, no games missed, normal CT scan, normal recovery without prolonged symptoms, and no residual deficits. This represents a standard uncomplicated concussion without risk factors for protracted recovery.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "He did have a concussion in 2020, which was an isolated, 1-time event. He missed 3 to 4 days of practice and no games at that time. He had no residual deficits.",
+        "mechanism": "Contact",
+        "recurrenceGroupId": null,
+        "treatment": {
+          "surgery": false,
+          "injection": "None",
+          "braceOrTape": false,
+          "rehabOnly": true
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 1
+        },
+        "currentStatus": "Recovered",
+        "statusReason": "The concussion occurred in 2020 and the patient has had no residual deficits. Medical evaluation confirms he has no risk factors for protracted concussion recovery. He has returned to full participation and cleared all medical evaluations.",
+        "statusSourceDoc": "GenMed Baron Tyler 103180246_78985818_Dict.pdf",
+        "statusSourceQuote": "He has no other risk factors for protracted concussion recovery.",
+        "notes": "CT scan was normal at time of injury. Single isolated event with complete recovery."
+      },
+      {
+        "date": "2021-08-01",
+        "season": 2021,
+        "bodyRegion": "CervicalSpine",
+        "structure": "Cervical nerve root",
+        "injuryName": "Stinger/Burner",
+        "type": "Other",
+        "typeReason": "A stinger is a neurapraxic injury to the cervical nerve roots or brachial plexus causing transient neurologic symptoms. It is not a structural musculoskeletal injury but rather a temporary nerve dysfunction, thus classified as 'Other'.",
+        "typeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "typeSourceQuote": "He also reports 1 isolated stinger with right-sided symptoms of pain, tingling, and numbness, which occurred in 2021 during camp.",
+        "side": "Right",
+        "severity": "Minor",
+        "severityReason": "Single isolated stinger event with transient symptoms and no time lost. Patient did not miss any practices or games. Prophylactic collar worn for 4 weeks but this was precautionary. No recurrent episodes or lasting neurologic deficits.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "He has had no other stingers, no other problems with his cervical spine since. He did wear a _____ collar prophylactically for 4 weeks, but no more after that. He did not miss any time or games with this injury.",
+        "mechanism": "Contact",
+        "recurrenceGroupId": null,
+        "treatment": {
+          "surgery": false,
+          "injection": "None",
+          "braceOrTape": true,
+          "rehabOnly": true
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 0
+        },
+        "currentStatus": "Recovered",
+        "statusReason": "Single isolated event in 2021 with no recurrent episodes since. Patient has full painless cervical range of motion with negative provocative tests (Lhermitte and Spurling signs). No ongoing symptoms or functional limitations.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "Physical examination of the cervical spine reveals full range of motion that is painless, negative Lhermitte and Spurling signs.",
+        "notes": "Wore prophylactic collar for 4 weeks. X-ray shows mild degenerative changes at C5-6 and C6-7 with loss of cervical lordosis."
+      },
+      {
+        "date": "2017-10-01",
+        "season": 2017,
+        "bodyRegion": "Shoulder",
+        "structure": "Anterior labrum",
+        "injuryName": "Right shoulder anterior instability/subluxation",
+        "type": "Subluxation",
+        "typeReason": "The patient experienced multiple anterior subluxation episodes of the right shoulder, representing recurrent partial displacement of the humeral head from the glenoid. This is distinct from a complete dislocation and is classified as subluxation.",
+        "typeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "typeSourceQuote": "For his right shoulder, he had an initial series of anterior subluxation episodes, which occurred during 2017",
+        "side": "Right",
+        "severity": "Major",
+        "severityReason": "Required surgical intervention with anterior labral repair in 2018. Led to recurrent instability requiring two additional surgeries. The injury resulted in structural damage requiring extensive repairs (270 degrees of labral repair), persistent cartilage degeneration, and Hill-Sachs lesion. This has long-term implications for shoulder function and durability.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "he had an initial series of anterior subluxation episodes, which occurred during 2017, ultimately resulting in him having a surgery to the right shoulder in 2018",
+        "mechanism": "Contact",
+        "recurrenceGroupId": "right-shoulder-instability",
+        "treatment": {
+          "surgery": true,
+          "injection": "None",
+          "braceOrTape": false,
+          "rehabOnly": false
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 0
+        },
+        "currentStatus": "Asymptomatic",
+        "statusReason": "Physical examination shows full range of motion with good strength and no instability on testing. Patient has returned to full participation without restrictions. However, imaging shows structural changes including cartilage thinning and degenerative findings.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "As far as his right shoulder examination is concerned, it was essentially normal. He had full range of motion of the right shoulder with good strength in all planes. No instability on exam to anterior or posterior shuck.",
+        "notes": "Initial injury led to surgery in 2018 during sophomore year of high school. Part of recurrent right shoulder instability pattern."
+      },
+      {
+        "date": "2023-12-01",
+        "season": 2023,
+        "bodyRegion": "Shoulder",
+        "structure": "Posterior labrum",
+        "injuryName": "Right shoulder posterior labral injury",
+        "type": "Tear",
+        "typeReason": "Patient developed posterior shoulder pain with specific activities that ultimately required arthroscopic posterior labrum repair surgery in February 2024. The surgical intervention confirms a structural tear of the posterior labral tissue requiring repair.",
+        "typeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "typeSourceQuote": "he started to notice posterior right shoulder pain, especially with overhead and cross body workouts such as bench press. Ultimately, he went on to have a third shoulder surgery in February 2024, which was an arthroscopy posterior labrum repair.",
+        "side": "Right",
+        "severity": "Major",
+        "severityReason": "Required surgical repair as the third shoulder surgery on this joint. Represents progression of structural damage in a previously operated shoulder. Patient wore shoulder harness for 4 games post-operatively. Imaging shows extensive prior labral repairs (270 degrees) with degenerative changes and cartilage thinning.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "Ultimately, he went on to have a third shoulder surgery in February 2024, which was an arthroscopy posterior labrum repair. Following that third surgery, he did wear a shoulder harness for the subsequent 4 games prophylactically",
+        "mechanism": "Overuse",
+        "recurrenceGroupId": "right-shoulder-instability",
+        "treatment": {
+          "surgery": true,
+          "injection": "None",
+          "braceOrTape": true,
+          "rehabOnly": false
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 0
+        },
+        "currentStatus": "Asymptomatic",
+        "statusReason": "Following the third surgery, patient played remainder of season without issue after removing harness. Current examination shows normal range of motion, good strength, and no instability. Cleared for full participation at combine with no restrictions.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "then no longer wore the harness and played the remainder of the season without issue. As far as his right shoulder examination is concerned, it was essentially normal.",
+        "notes": "Third surgery on right shoulder. Symptoms began late 2023, surgery February 2024. MRI shows labrum intact without re-tear but with degenerative changes."
+      },
+      {
+        "date": "2020-12-01",
+        "season": 2020,
+        "bodyRegion": "Shoulder",
+        "structure": "Subacromial bursa",
+        "injuryName": "Left shoulder impingement/bursitis",
+        "type": "Other",
+        "typeReason": "Subacromial impingement and bursitis is an inflammatory condition rather than a structural tear or sprain. It involves irritation and inflammation of the bursa and surrounding tissues due to mechanical impingement. This does not fit standard musculoskeletal injury types.",
+        "typeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "typeSourceQuote": "For his left shoulder, he had 1 surgery in January 2022, which sounds like it was most likely an arthroscopic subacromial debridement and bursectomy for symptoms that he describes that are consistent with impingement pain and bursitis.",
+        "side": "Left",
+        "severity": "Moderate",
+        "severityReason": "Required surgical intervention with arthroscopic debridement and bursectomy in January 2022. While not as severe as labral tears requiring repair, the need for surgical treatment indicates moderate severity. MRI shows ongoing supraspinatus tendinopathy and os acromiale with marrow edema.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "he had 1 surgery in January 2022, which sounds like it was most likely an arthroscopic subacromial debridement and bursectomy",
+        "mechanism": "Overuse",
+        "recurrenceGroupId": null,
+        "treatment": {
+          "surgery": true,
+          "injection": "Unknown",
+          "braceOrTape": false,
+          "rehabOnly": false
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 0
+        },
+        "currentStatus": "Asymptomatic",
+        "statusReason": "Physical examination is essentially normal with full range of motion, good strength, and no instability. Patient has returned to full participation. However, MRI shows persistent supraspinatus tendinopathy and os acromiale with mild marrow edema indicating ongoing structural concerns.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "As for the physical exam of the left shoulder, this was also essentially normal with full range of motion, good strength, and no instability on physical exam.",
+        "notes": "Surgery January 2022. MRI shows os acromiale and supraspinatus tendinopathy. Symptoms described as end of 2020 season."
+      },
+      {
+        "date": "2021-10-18",
+        "season": 2021,
+        "bodyRegion": "Knee",
+        "structure": "Lateral meniscus",
+        "injuryName": "Left lateral meniscus tear",
+        "type": "Tear",
+        "typeReason": "Patient sustained a lateral meniscus injury that required arthroscopic partial lateral meniscectomy surgery. The need for surgical excision of damaged meniscal tissue confirms this was a structural tear of the meniscus.",
+        "typeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "typeSourceQuote": "Left knee. He had a lateral meniscus injury on October 18, 2021. He completed the season and then went on to surgery on January 10, 2022. That was an arthroscopic partial lateral meniscectomy.",
+        "side": "Left",
+        "severity": "Moderate",
+        "severityReason": "Required surgical meniscectomy indicating significant structural damage. Patient completed the season before surgery showing ability to function but needed surgical intervention. MRI shows minimal residual meniscal tissue loss but also grade 2 patellar chondromalacia and moderate knee effusion indicating ongoing joint stress.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "He had a lateral meniscus injury on October 18, 2021. He completed the season and then went on to surgery on January 10, 2022. That was an arthroscopic partial lateral meniscectomy.",
+        "mechanism": "Contact",
+        "recurrenceGroupId": null,
+        "treatment": {
+          "surgery": true,
+          "injection": "None",
+          "braceOrTape": false,
+          "rehabOnly": false
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 0
+        },
+        "currentStatus": "Recovered",
+        "statusReason": "Physical examination shows normal knee with full range of motion, no effusion, no ligamentous instability, and no tenderness. MRI shows good lateral meniscus with no recurrent tearing and no appreciable meniscal deficiency. Patient has returned to full function.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "On examination of his knee, he has well-healed incisions and a normal knee exam with full range of motion, no effusion, no ligamentous instability, and no tenderness throughout the knee. He has an MRI of his left knee, which reveals a good lateral meniscus with no obvious recurrent tearing and no appreciable meniscal deficiency.",
+        "notes": "Injury October 18, 2021. Completed season. Surgery January 10, 2022. MRI shows grade 2 patellar chondromalacia at medial facet and moderate knee effusion with possible chondral loose bodies."
+      },
+      {
+        "date": "2021-08-01",
+        "season": 2021,
+        "bodyRegion": "Knee",
+        "structure": "Patellar tendon",
+        "injuryName": "Left patellar tendinitis",
+        "type": "Tendinopathy",
+        "typeReason": "Patellar tendinitis is a degenerative condition of the patellar tendon characterized by pain and functional limitation without structural tear. Current MRI shows mild distal quadriceps tendinosis, supporting this as an overuse tendinopathy rather than acute tear.",
+        "typeSourceDoc": "MRI Knee W_O IV Contrast Left (14).pdf",
+        "typeSourceQuote": "INDICATION: PreOrdered Study. NFL combine physical examination. History of lateral meniscectomy October 2021. History of patellar tendinitis August 2021.",
+        "side": "Left",
+        "severity": "Minor",
+        "severityReason": "No documented time lost or surgical intervention required for this condition. Current MRI shows mild tendinosis without tear. Patient has maintained full participation. This represents a common overuse condition that did not significantly impact availability.",
+        "severitySourceDoc": "MRI Knee W_O IV Contrast Left (14).pdf",
+        "severitySourceQuote": "There is mild distal quadriceps tendinosis without tear. The patellar tendon is intact.",
+        "mechanism": "Overuse",
+        "recurrenceGroupId": null,
+        "treatment": {
+          "surgery": false,
+          "injection": "Unknown",
+          "braceOrTape": false,
+          "rehabOnly": true
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 0
+        },
+        "currentStatus": "Asymptomatic",
+        "statusReason": "Current examination shows normal knee function with full range of motion and no tenderness. MRI confirms patellar tendon is intact. Patient cleared for full participation without restrictions.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "On examination of his knee, he has well-healed incisions and a normal knee exam with full range of motion, no effusion, no ligamentous instability, and no tenderness throughout the knee.",
+        "notes": "Historical diagnosis from August 2021. Current MRI shows mild quadriceps tendinosis but patellar tendon intact."
+      },
+      {
+        "date": "2023-08-07",
+        "season": 2023,
+        "bodyRegion": "ThighHamstring",
+        "structure": "Hamstring",
+        "injuryName": "Right hamstring strain",
+        "type": "Strain",
+        "typeReason": "Grade 1 hamstring strain is a muscle-tendon unit injury involving stretching and minor tearing of muscle fibers. This is the classic definition of a strain injury to the muscle.",
+        "typeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "typeSourceQuote": "For his lower extremities, he does report a grade 1 right hamstring strain, first on August 7, 2023, which recovered without issue after a week and a half, and he had no missed time.",
+        "side": "Right",
+        "severity": "Minor",
+        "severityReason": "Grade 1 strain represents mild injury with minimal tissue disruption. Patient recovered in 1.5 weeks with no games missed. Complete recovery without complications. This is a common low-grade muscle injury with minimal impact.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "grade 1 right hamstring strain, first on August 7, 2023, which recovered without issue after a week and a half, and he had no missed time.",
+        "mechanism": "NonContact",
+        "recurrenceGroupId": "right-hamstring-strain",
+        "treatment": {
+          "surgery": false,
+          "injection": "None",
+          "braceOrTape": false,
+          "rehabOnly": true
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 2
+        },
+        "currentStatus": "Recovered",
+        "statusReason": "Patient recovered without issue after 1.5 weeks in 2023. No documented residual symptoms or functional limitations. Lower extremity examination was within normal limits at combine evaluation.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "which recovered without issue after a week and a half, and he had no missed time.",
+        "notes": "First hamstring strain. Grade 1. No games missed though missed ~1.5 weeks practice."
+      },
+      {
+        "date": "2024-09-22",
+        "season": 2024,
+        "bodyRegion": "ThighHamstring",
+        "structure": "Hamstring",
+        "injuryName": "Right hamstring strain (recurrent)",
+        "type": "Strain",
+        "typeReason": "Second grade 1 hamstring strain on the same side occurring approximately one year after the first strain. This represents a recurrent muscle-tendon unit injury with minor fiber disruption.",
+        "typeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "typeSourceQuote": "He had a second hamstring strain about a year later, September 22, 2024, which again was a grade 1 strain where he missed about a week and a half of practice but no games.",
+        "side": "Right",
+        "severity": "Minor",
+        "severityReason": "Grade 1 strain severity with similar recovery timeline to first strain (1.5 weeks). No games missed. However, recurrence on same side within a year indicates potential for future re-injury. Still classified as minor due to low grade and minimal time lost.",
+        "severitySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "severitySourceQuote": "which again was a grade 1 strain where he missed about a week and a half of practice but no games.",
+        "mechanism": "NonContact",
+        "recurrenceGroupId": "right-hamstring-strain",
+        "treatment": {
+          "surgery": false,
+          "injection": "None",
+          "braceOrTape": false,
+          "rehabOnly": true
+        },
+        "timeLost": {
+          "missedGames": 0,
+          "missedPracticeWeeks": 2
+        },
+        "currentStatus": "Recovered",
+        "statusReason": "Patient has recovered from this September 2024 strain and participated fully through remainder of season and combine preparation. Lower extremity examination shows no abnormalities or limitations. Cleared for full participation.",
+        "statusSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "statusSourceQuote": "As for the parts of his exam which were not mentioned, such as his lumbar spine, the remainder of his upper extremities, his right knee, and bilateral ankles and feet, everything examined within normal limits",
+        "notes": "Second hamstring strain on right side, occurring ~1 year after first. Grade 1. No games missed, ~1.5 weeks practice."
+      }
+    ],
+    "surgeries": [
+      {
+        "date": "2018-08-01",
+        "bodyRegion": "Shoulder",
+        "procedure": "Arthroscopic anterior labral repair - right shoulder",
+        "procedureCategory": "Repair",
+        "procedureCategoryReason": "This was an arthroscopic surgical procedure to repair the torn anterior labrum using anchors to reattach the labral tissue to the glenoid. Repair involves fixing damaged tissue back to its anatomic position, as opposed to reconstruction which would involve tissue grafts or replacement.",
+        "procedureCategorySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "procedureCategorySourceQuote": "he had an initial series of anterior subluxation episodes, which occurred during 2017, ultimately resulting in him having a surgery to the right shoulder in 2018, in his sophomore year of high school, which was an arthroscopic anterior labral repair.",
+        "side": "Right",
+        "majorJoint": true,
+        "revision": false,
+        "reasonRelatedInjuryId": "right-shoulder-instability",
+        "outcome": {
+          "returnedToPlay": true,
+          "residualSymptoms": "Moderate",
+          "outcomeReason": "Patient returned to play but developed residual stiffness and pain, possibly due to incomplete therapy completion. This led to a second surgery in 2020 for debridement. Subsequently required a third surgery in 2024 for posterior labral issues, indicating the shoulder has ongoing structural problems despite initial repair.",
+          "outcomeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+          "outcomeSourceQuote": "He recovered well from this injury though reports that he may not have completed his therapy and did develop some residual stiffness and pain, which ultimately lead to a second shoulder surgery on January 6, 2020",
+          "currentLimitation": "None"
+        }
+      },
+      {
+        "date": "2020-01-06",
+        "bodyRegion": "Shoulder",
+        "procedure": "Arthroscopic debridement and bursectomy - right shoulder",
+        "procedureCategory": "Debridement",
+        "procedureCategoryReason": "This procedure involved removing damaged or inflamed tissue (debridement) and excising the bursa (bursectomy) to address residual stiffness and pain from the prior surgery. Debridement is a cleaning and removal procedure rather than repair or reconstruction of structures.",
+        "procedureCategorySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "procedureCategorySourceQuote": "which ultimately lead to a second shoulder surgery on January 6, 2020, which was an arthroscopic debridement and bursectomy of the right shoulder.",
+        "side": "Right",
+        "majorJoint": true,
+        "revision": true,
+        "reasonRelatedInjuryId": "right-shoulder-instability",
+        "outcome": {
+          "returnedToPlay": true,
+          "residualSymptoms": "Mild",
+          "outcomeReason": "Patient felt fine following this surgery until late 2023/early 2024, representing approximately 3-4 years of good function. However, subsequent development of posterior shoulder pain requiring third surgery indicates incomplete resolution of underlying shoulder pathology.",
+          "outcomeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+          "outcomeSourceQuote": "He then felt fine until the end of 2023 and early 2024, when he started to notice posterior right shoulder pain",
+          "currentLimitation": "None"
+        }
+      },
+      {
+        "date": "2024-02-01",
+        "bodyRegion": "Shoulder",
+        "procedure": "Arthroscopic posterior labrum repair - right shoulder",
+        "procedureCategory": "Repair",
+        "procedureCategoryReason": "This was an arthroscopic surgical procedure to repair the torn posterior labrum. Like the anterior labral repair, this involves reattaching damaged labral tissue to the glenoid using anchors to restore anatomic integrity. This is a repair procedure fixing native tissue rather than reconstruction or replacement.",
+        "procedureCategorySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "procedureCategorySourceQuote": "Ultimately, he went on to have a third shoulder surgery in February 2024, which was an arthroscopy posterior labrum repair.",
+        "side": "Right",
+        "majorJoint": true,
+        "revision": true,
+        "reasonRelatedInjuryId": "right-shoulder-instability",
+        "outcome": {
+          "returnedToPlay": true,
+          "residualSymptoms": "None",
+          "outcomeReason": "Patient successfully returned to play, initially wearing shoulder harness for 4 games prophylactically then playing remainder of season without issue. Current physical examination is essentially normal with full range of motion, good strength, and no instability. MRI shows labrum intact without re-tear.",
+          "outcomeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+          "outcomeSourceQuote": "Following that third surgery, he did wear a shoulder harness for the subsequent 4 games prophylactically, but then no longer wore the harness and played the remainder of the season without issue. As far as his right shoulder examination is concerned, it was essentially normal.",
+          "currentLimitation": "None"
+        }
+      },
+      {
+        "date": "2022-01-01",
+        "bodyRegion": "Shoulder",
+        "procedure": "Arthroscopic subacromial debridement and bursectomy - left shoulder",
+        "procedureCategory": "Debridement",
+        "procedureCategoryReason": "This procedure involved arthroscopic removal of damaged subacromial tissue and excision of the inflamed bursa to treat impingement symptoms and bursitis. Debridement procedures clean out diseased or damaged tissue rather than repairing structural tears or reconstructing anatomy.",
+        "procedureCategorySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "procedureCategorySourceQuote": "For his left shoulder, he had 1 surgery in January 2022, which sounds like it was most likely an arthroscopic subacromial debridement and bursectomy for symptoms that he describes that are consistent with impingement pain and bursitis.",
+        "side": "Left",
+        "majorJoint": true,
+        "revision": false,
+        "reasonRelatedInjuryId": null,
+        "outcome": {
+          "returnedToPlay": true,
+          "residualSymptoms": "Mild",
+          "outcomeReason": "Physical examination shows essentially normal shoulder with full range of motion, good strength, and no instability. However, MRI findings show persistent supraspinatus tendinopathy and os acromiale with mild marrow edema and cystic changes, indicating ongoing structural concerns despite symptom improvement.",
+          "outcomeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+          "outcomeSourceQuote": "As for the physical exam of the left shoulder, this was also essentially normal with full range of motion, good strength, and no instability on physical exam.",
+          "currentLimitation": "None"
+        }
+      },
+      {
+        "date": "2022-01-10",
+        "bodyRegion": "Knee",
+        "procedure": "Arthroscopic partial lateral meniscectomy - left knee",
+        "procedureCategory": "Meniscectomy",
+        "procedureCategoryReason": "This procedure involved arthroscopic excision of damaged lateral meniscus tissue. Meniscectomy is the specific surgical removal of torn or damaged meniscal tissue and is distinct from meniscal repair (which preserves tissue) or other knee procedures.",
+        "procedureCategorySourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+        "procedureCategorySourceQuote": "He completed the season and then went on to surgery on January 10, 2022. That was an arthroscopic partial lateral meniscectomy.",
+        "side": "Left",
+        "majorJoint": true,
+        "revision": false,
+        "reasonRelatedInjuryId": null,
+        "outcome": {
+          "returnedToPlay": true,
+          "residualSymptoms": "Mild",
+          "outcomeReason": "Patient has returned to full function with normal examination including full range of motion, no effusion, no ligamentous instability, and no tenderness. MRI shows good lateral meniscus with no recurrent tearing. However, MRI also shows grade 2 patellar chondromalacia, moderate knee effusion, and possible chondral loose bodies indicating some ongoing joint stress.",
+          "outcomeSourceDoc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+          "outcomeSourceQuote": "On examination of his knee, he has well-healed incisions and a normal knee exam with full range of motion, no effusion, no ligamentous instability, and no tenderness throughout the knee. He has an MRI of his left knee, which reveals a good lateral meniscus with no obvious recurrent tearing and no appreciable meniscal deficiency.",
+          "currentLimitation": "None"
+        }
+      }
+    ],
+    "imagingFindings": [
+      {
+        "date": "2025-02-25",
+        "modality": "XR",
+        "bodyRegion": "CervicalSpine",
+        "side": "NA",
+        "sourceDoc": "XR Spine Cervical Series w_Flex and Ext (1).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "Mild",
+          "cartilageDamage": "Unknown",
+          "labrumMeniscusStatus": "Unknown",
+          "tendonStatus": "Unknown",
+          "ligamentStatus": "Normal",
+          "effusion": "None",
+          "looseBodies": false,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": false,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Mild degenerative changes at C5-6 and C6-7, loss of cervical lordosis. Otherwise normal alignment, bony structures, disc heights, and neuroforamina.",
+          "date": "2025-02-25",
+          "doc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf"
+        }
+      },
+      {
+        "date": "2025-02-25",
+        "modality": "XR",
+        "bodyRegion": "Shoulder",
+        "side": "Right",
+        "sourceDoc": "XR Shoulder 2 View Min Right (1).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "Mild",
+          "cartilageDamage": "Unknown",
+          "labrumMeniscusStatus": "PostOpNoRetear",
+          "tendonStatus": "Unknown",
+          "ligamentStatus": "Unknown",
+          "effusion": "None",
+          "looseBodies": false,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": true,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Postsurgical changes of labral repair. Grade 1 arthrosis of glenohumeral joint with visible anchor tracks. Otherwise normal bones, joint spaces and soft tissues.",
+          "date": "2025-02-25",
+          "doc": "Ortho Baron Tyler 103194844_78985818_Dict.pdf"
+        }
+      },
+      {
+        "date": "2025-02-25",
+        "modality": "MRI",
+        "bodyRegion": "Shoulder",
+        "side": "Right",
+        "sourceDoc": "MRI Shoulder W_O IV Contrast Right (7).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "Moderate",
+          "cartilageDamage": "Moderate",
+          "labrumMeniscusStatus": "PostOpNoRetear",
+          "tendonStatus": "Tendinosis",
+          "ligamentStatus": "Normal",
+          "effusion": "None",
+          "looseBodies": false,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": true,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Prior extensive glenoid labral repairs (270 degrees). Labrum intact, no re-tear. Grade 1-2 chondrosis of glenoid. Cartilage thinning and irregularity. Small Hill-Sachs defect (8x9x3mm) with mild edema. Distal supraspinatus tendinopathy and early interstitial delamination. Mild infraspinatus tendinopathy. Subacromial bursitis.",
+          "date": "2025-02-25",
+          "doc": "MRI Shoulder W_O IV Contrast Right (7).pdf"
+        }
+      },
+      {
+        "date": "2025-02-25",
+        "modality": "XR",
+        "bodyRegion": "Shoulder",
+        "side": "Left",
+        "sourceDoc": "XR Acromion Clavicular Joints Bilat (1).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "None",
+          "cartilageDamage": "Unknown",
+          "labrumMeniscusStatus": "Unknown",
+          "tendonStatus": "Unknown",
+          "ligamentStatus": "Unknown",
+          "effusion": "None",
+          "looseBodies": false,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": false,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Os acromiale present. Otherwise normal exam.",
+          "date": "2025-02-25",
+          "doc": "XR Acromion Clavicular Joints Bilat (1).pdf"
+        }
+      },
+      {
+        "date": "2025-02-25",
+        "modality": "MRI",
+        "bodyRegion": "Shoulder",
+        "side": "Left",
+        "sourceDoc": "MRI Shoulder W_O IV Contrast Left (12).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "Mild",
+          "cartilageDamage": "None",
+          "labrumMeniscusStatus": "Normal",
+          "tendonStatus": "Tendinosis",
+          "ligamentStatus": "Normal",
+          "effusion": "None",
+          "looseBodies": false,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": false,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Supraspinatus tendinopathy without tear. Os acromiale 25mm from distal tip with mild marrow edema and small cystic changes adjacent to synchondrosis. Mild AC joint arthrosis. Mild subacromial bursitis. Postsurgical artifacts. Cartilage and labrum intact.",
+          "date": "2025-02-25",
+          "doc": "MRI Shoulder W_O IV Contrast Left (12).pdf"
+        }
+      },
+      {
+        "date": "2025-02-25",
+        "modality": "XR",
+        "bodyRegion": "Knee",
+        "side": "Bilateral",
+        "sourceDoc": "XR Knee 4 View Bilat (4).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "None",
+          "cartilageDamage": "Unknown",
+          "labrumMeniscusStatus": "Unknown",
+          "tendonStatus": "Unknown",
+          "ligamentStatus": "Unknown",
+          "effusion": "None",
+          "looseBodies": false,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": false,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Bilateral knees: Normal bones and joint spaces",
+          "date": "2025-02-25",
+          "doc": "XR Knee 4 View Bilat (4).pdf"
+        }
+      },
+      {
+        "date": "2025-02-25",
+        "modality": "MRI",
+        "bodyRegion": "Knee",
+        "side": "Left",
+        "sourceDoc": "MRI Knee W_O IV Contrast Left (14).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "Moderate",
+          "cartilageDamage": "Moderate",
+          "labrumMeniscusStatus": "PostOpNoRetear",
+          "tendonStatus": "Tendinosis",
+          "ligamentStatus": "Normal",
+          "effusion": "Moderate",
+          "looseBodies": true,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": false,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Minimal apical blunting lateral meniscus from prior meniscectomy. Chondral fissuring apex and medial facet of patella with low level subchondral osseous edema (grade 2 chondromalacia). Small filling defects in effusion, chondral loose bodies cannot be excluded. Mild distal quadriceps tendinosis. Patellar tendon intact. Moderate knee joint effusion. Trace popliteal cyst. Mild MCL thickening from prior injury. ACL/PCL intact.",
+          "date": "2025-02-25",
+          "doc": "MRI Knee W_O IV Contrast Left (14).pdf"
+        }
+      },
+      {
+        "date": "2025-02-24",
+        "modality": "XR",
+        "bodyRegion": "Other",
+        "side": "NA",
+        "sourceDoc": "XR Chest PA and Lateral (5).pdf",
+        "structuredFindings": {
+          "degenerativeChange": "None",
+          "cartilageDamage": "Unknown",
+          "labrumMeniscusStatus": "Unknown",
+          "tendonStatus": "Unknown",
+          "ligamentStatus": "Unknown",
+          "effusion": "None",
+          "looseBodies": false,
+          "nonunionOrDelayedUnion": false,
+          "avascularNecrosisConcern": false,
+          "hardwareComplication": "None",
+          "postTraumaticArthritis": false,
+          "stressReactionOrFracture": false
+        },
+        "imaging": {
+          "finding": "Normal cardiomediastinal contours, lungs, pleura and visualized osseous structures. Minimal dextroscoliosis of midthoracic spine.",
+          "date": "2025-02-24",
+          "doc": "XR Chest PA and Lateral (5).pdf"
+        }
+      }
+    ],
+    "neuro": {
+      "concussions": [
+        {
+          "date": "2020-01-01",
+          "lossOfConsciousness": false,
+          "timeLostDays": 4,
+          "missedGames": 0,
+          "prolongedSymptoms": false
+        }
+      ],
+      "cervicalEvents": [
+        {
+          "date": "2021-08-01",
+          "eventType": "Stinger",
+          "recurrent": false,
+          "timeLostGames": 0,
+          "currentSymptoms": false
+        }
+      ]
+    },
+    "timeline": [
+      {
+        "year": 2017,
+        "event": "Multiple right shoulder anterior subluxation episodes"
+      },
+      {
+        "year": 2018,
+        "event": "Right shoulder arthroscopic anterior labral repair (Surgery #1) - high school sophomore year"
+      },
+      {
+        "year": 2020,
+        "event": "Concussion - missed 4-5 days practice, no games"
+      },
+      {
+        "year": 2020,
+        "event": "Right shoulder arthroscopic debridement and bursectomy (Surgery #2) - January 6"
+      },
+      {
+        "year": 2020,
+        "event": "Left shoulder impingement/bursitis symptoms begin - end of season"
+      },
+      {
+        "year": 2021,
+        "event": "Cervical stinger - August, during camp - no time lost"
+      },
+      {
+        "year": 2021,
+        "event": "Left patellar tendinitis - August"
+      },
+      {
+        "year": 2021,
+        "event": "Left lateral meniscus tear - October 18"
+      },
+      {
+        "year": 2022,
+        "event": "Left shoulder arthroscopic subacromial debridement and bursectomy (Surgery #3) - January"
+      },
+      {
+        "year": 2022,
+        "event": "Left knee arthroscopic partial lateral meniscectomy (Surgery #4) - January 10"
+      },
+      {
+        "year": 2023,
+        "event": "Right shoulder posterior pain begins - late 2023"
+      },
+      {
+        "year": 2023,
+        "event": "Right hamstring grade 1 strain #1 - August 7 - missed ~1.5 weeks practice"
+      },
+      {
+        "year": 2024,
+        "event": "Right shoulder arthroscopic posterior labrum repair (Surgery #5) - February"
+      },
+      {
+        "year": 2024,
+        "event": "Wore shoulder harness for 4 games post-op, then played remainder of season"
+      },
+      {
+        "year": 2024,
+        "event": "Right hamstring grade 1 strain #2 - September 22 - missed ~1.5 weeks practice"
+      },
+      {
+        "year": 2025,
+        "event": "NFL Combine evaluation - February 25-26 - cleared to participate"
+      }
+    ],
+    "scoringInputs": {
+      "lastSignificantEventDate": "2024-09-22",
+      "monthsSinceLastSignificantEvent": 5,
+      "structuralRedFlagCount": 6,
+      "degenerativeBurdenScore": 8,
+      "instabilityBurdenScore": 7
+    }
+  },
+  "score": 4,
+  "scoreBreakdown": {
+    "orthoPenalty": 41.3,
+    "redFlagPenalty": 38,
+    "availabilityPenalty": 2.5,
+    "neuroPenalty": 2.1,
+    "recentBoostMultiplier": 1.146,
+    "totalPenalty": 96.2
+  },
+  "documents": [
+    {
+      "filename": "XR Spine Cervical Series w_Flex and Ext (1).pdf",
+      "docType": "XR",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "XR Shoulder 2 View Min Right (1).pdf",
+      "docType": "XR",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "XR Knee 4 View Bilat (4).pdf",
+      "docType": "XR",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "XR Chest PA and Lateral (5).pdf",
+      "docType": "XR",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "XR Acromion Clavicular Joints Bilat (1).pdf",
+      "docType": "XR",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "MRI Shoulder W_O IV Contrast Right (7).pdf",
+      "docType": "MRI",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "Ortho Baron Tyler 103194844_78985818_Dict.pdf",
+      "docType": "Ortho",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "GenMed Baron Tyler 103180246_78985818_Dict.pdf",
+      "docType": "GenMed",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "MRI Knee W_O IV Contrast Left (14).pdf",
+      "docType": "MRI",
+      "uploadedAt": "2026-02-23"
+    },
+    {
+      "filename": "MRI Shoulder W_O IV Contrast Left (12).pdf",
+      "docType": "MRI",
+      "uploadedAt": "2026-02-23"
+    }
+  ],
+  "savedAt": "2026-02-23T05:21:12.405Z"
+}
