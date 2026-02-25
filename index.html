@@ -43,33 +43,145 @@
     .hover-info:hover i { opacity: 1; }
     .popover { max-width: 400px; }
     .popover-body { font-size: 0.875rem; line-height: 1.5; }
-
+    
     /* Print styles for better PDF output */
     @media print {
-      @page { size: letter landscape; margin: 0.25in 0.3in; }
-      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0 !important; padding: 0 !important; }
-      .container, .container-fluid { width: 100% !important; max-width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; margin: 0 !important; }
-      .navbar, .nav-tabs, #uploadProgress, .btn, button, .sortable i, .form-check, .bi-arrow-down-up, nav, header { display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important; }
-      .card { page-break-inside: avoid; box-shadow: none !important; border: 1px solid #ddd !important; margin-bottom: 1rem; }
-      .card-header { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 10px 15px !important; }
-      .card-body { padding: 15px !important; }
-      .badge, .score-circle { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      table { width: 100%; font-size: 9pt; border-collapse: collapse; }
-      thead { display: table-header-group; }
-      tbody { display: table-row-group; }
-      tr[class*="-row-"] { page-break-after: avoid !important; page-break-inside: avoid !important; }
-      tr[class*="-details-"] { page-break-before: avoid !important; page-break-inside: avoid !important; }
-      tr { page-break-inside: avoid; }
-      td, th { padding: 6px !important; font-size: 9pt; vertical-align: middle; }
-      .accordion-button::after { display: none; }
-      .collapse:not(.show), .accordion-collapse { display: block !important; height: auto !important; }
-      .timeline-item { page-break-inside: avoid; font-size: 9pt; margin-bottom: 8px; }
-      h6 { font-size: 11pt; margin-top: 10px; margin-bottom: 8px; }
-      h4 { font-size: 13pt; margin-bottom: 10px; }
-      .score-circle { width: 100px; height: 100px; font-size: 2rem; }
-      #compareSection { page-break-before: always; position: relative; width: 100%; clear: both; margin-top: 0; }
-      .comparison-table { width: 100%; margin-top: 10px; }
-      .table-responsive { overflow: visible !important; }
+      @page {
+        size: letter landscape;
+        margin: 0.25in 0.3in;
+      }
+      
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      .container, .container-fluid {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin: 0 !important;
+      }
+      
+      .navbar, .nav-tabs, #uploadProgress, .btn, button, .sortable i, .form-check, .bi-arrow-down-up, nav, header {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      .card {
+        page-break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        margin-bottom: 1rem;
+      }
+      
+      .card-header {
+        background-color: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 10px 15px !important;
+      }
+      
+      .card-body {
+        padding: 15px !important;
+      }
+      
+      .badge, .score-circle {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      
+      table {
+        width: 100%;
+        font-size: 9pt;
+        border-collapse: collapse;
+      }
+      
+      thead {
+        display: table-header-group;
+      }
+      
+      tbody {
+        display: table-row-group;
+      }
+      
+      /* Keep injury/surgery rows with their detail rows */
+      tr[class*=\"-row-\"] {
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      
+      tr[class*=\"-details-\"] {
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+
+      }
+      
+      /* General row handling */
+      tr {
+        page-break-inside: avoid;
+      }
+      
+      td, th {
+        padding: 6px !important;
+        font-size: 9pt;
+        vertical-align: middle;
+      }
+      
+      .accordion-button::after {
+        display: none;
+      }
+      
+      .collapse:not(.show), .accordion-collapse {
+        display: block !important;
+        height: auto !important;
+      }
+      
+      .timeline-item {
+        page-break-inside: avoid;
+        font-size: 9pt;
+        margin-bottom: 8px;
+      }
+      
+      h6 {
+        font-size: 11pt;
+        margin-top: 10px;
+        margin-bottom: 8px;
+      }
+      
+      h4 {
+        font-size: 13pt;
+        margin-bottom: 10px;
+      }
+      
+      .score-circle {
+        width: 100px;
+        height: 100px;
+        font-size: 2rem;
+      }
+      
+      /* Comparison section */
+      #compareSection {
+        page-break-before: always;
+        position: relative;
+        width: 100%;
+        clear: both;
+        margin-top: 0;
+      }
+      
+      .comparison-table {
+        width: 100%;
+        margin-top: 10px;
+      }
+      
+      .table-responsive {
+        overflow: visible !important;
+      }
     }
   </style>
 </head>
@@ -208,6 +320,57 @@
       </div>
     </div>
   </div>
+
+  <!-- Edit Facts Modal -->
+  <div class="modal fade" id="editFactsModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Medical Facts</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Number of Surgeries</label>
+            <input type="number" class="form-control" id="editSurgeries" min="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Major Joint Surgeries (Shoulder/Knee)</label>
+            <input type="number" class="form-control" id="editMajorJoint" min="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Recurrence Count</label>
+            <input type="number" class="form-control" id="editRecurrence" min="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Missed Games</label>
+            <input type="number" class="form-control" id="editMissedGames" min="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Concussion Count</label>
+            <input type="number" class="form-control" id="editConcussions" min="0">
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="editCartilage">
+            <label class="form-check-label" for="editCartilage">Cartilage Degeneration Flag</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="editLooseBodies">
+            <label class="form-check-label" for="editLooseBodies">Loose Bodies / Effusion Flag</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="editCervical">
+            <label class="form-check-label" for="editCervical">Cervical Neurologic Event Flag</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveFactsBtn">Save & Recalculate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Evidence Modal -->
   <div class="modal fade" id="evidenceModal" tabindex="-1">
     <div class="modal-dialog">

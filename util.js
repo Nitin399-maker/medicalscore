@@ -9,12 +9,6 @@ export const MEDICAL_ANALYSIS_PROMPT = `CRITICAL INSTRUCTIONS FOR COUNTS:
 - missedGamesTotal should be the sum of all missedGames from the "availability.missedGamesBySeason" array
 - DO NOT inflate counts - they must match the actual array lengths
 
-CRITICAL DISTINCTION - Clinical Injuries vs Incidental Findings:
-- Include in "injuries" array ONLY injuries that were clinically diagnosed and discussed by the examining physician
-- Do NOT include incidental imaging findings unless they were the reason for the exam or resulted in treatment/time loss
-- Incidental findings (e.g., mild tendinosis noted on MRI but not discussed, old healed injuries, asymptomatic anatomical variants) should be recorded in "imagingFindings" instead
-- If an MRI finding led to treatment, time loss, or was specifically addressed by the physician, then it qualifies as a clinical injury
-
 Extract and return ONLY a valid JSON object with the following structure (no markdown, no code blocks, just raw JSON):
 {
   "player": {
@@ -87,7 +81,6 @@ Extract and return ONLY a valid JSON object with the following structure (no mar
       "statusReason": "Brief explanation of current status based on documented recovery, symptoms, or limitations (2-3 sentences)",
       "statusSourceDoc": "Document filename where status information was found",
       "statusSourceQuote": "Exact sentence or phrase from document supporting this status",
-      "clinicalSummary": "1-2 concise sentences summarizing this injury as a physician would: what happened, key structural findings from imaging if any, treatment, and current status. Write in plain clinical language suitable for a medical report.",
       "notes": "string"
     }
   ],
@@ -104,7 +97,6 @@ Extract and return ONLY a valid JSON object with the following structure (no mar
       "majorJoint": true,
       "revision": false,
       "reasonRelatedInjuryId": "optional reference",
-      "clinicalSummary": "1-2 concise sentences summarizing this procedure as a physician would: the indication, what was done, and the outcome/recovery status. Write in plain clinical language suitable for a medical report.",
       "outcome": {
         "returnedToPlay": true,
         "residualSymptoms": "None|Mild|Moderate|Severe|Unknown",
