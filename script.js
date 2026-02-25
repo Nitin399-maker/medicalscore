@@ -1,41 +1,25 @@
-
-// ========== IMPORTS ==========
 import { openaiConfig } from "bootstrap-llm-provider";
 import { bootstrapAlert } from "bootstrap-alert";
 import { calculateMSI, MEDICAL_ANALYSIS_PROMPT, getPrintStyles } from "./util.js";
 
-// ========== DATA MODEL ==========
 let players = [];
 let currentPlayerView = null;
 let selectedComparePlayers = new Set();
-
-// ========== LLM CONFIGURATION ==========
 let provider = null;
 let currentModel = "anthropic/claude-sonnet-4.5";
 
 // ========== UTILITY FUNCTIONS ==========
 function formatDate(dateStr) {
     if (!dateStr || dateStr === 'N/A') return 'N/A';
-    
     try {
         const date = new Date(dateStr);
         if (isNaN(date.getTime())) return dateStr;
-        
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const day = date.getDate();
-        
         return `${months[date.getMonth()]} ${day}, ${date.getFullYear()}`;
     } catch (e) {
         return dateStr;
     }
-}
-
-// ========== SCORING LOGIC ==========
-// calculateMSI is now imported from util.js
-
-function calculateScore(facts) {
-    const result = calculateMSI(facts);
-    return result.msi;
 }
 
 function getScoreLabel(score) {
@@ -45,7 +29,7 @@ function getScoreLabel(score) {
     }
     const validScore = Math.max(0, Math.min(100, score));
     if (validScore >= 75) return { label: "Low Risk", class: "score-low", badge: "success" };
-    if (validScore >= 50) return { label: "Medium Risk", class: "score-medium", badge: "warning" };
+    if (validScore >= 50) return { label: "Moderate Risk", class: "score-medium", badge: "warning" };
     return { label: "High Risk", class: "score-high", badge: "danger" };
 }
 
@@ -57,7 +41,6 @@ function getScoreExplanation(breakdown) {
     if (breakdown.redFlagPenalty > 0) deductions.push({ reason: "Structural red flags", value: breakdown.redFlagPenalty });
     if (breakdown.availabilityPenalty > 0) deductions.push({ reason: "Missed games & availability", value: breakdown.availabilityPenalty });
     if (breakdown.neuroPenalty > 0) deductions.push({ reason: "Neurological concerns", value: breakdown.neuroPenalty });
-    
     deductions.sort((a, b) => b.value - a.value);
     return deductions.slice(0, 4);
 }
@@ -98,7 +81,6 @@ function recalculateScores() {
         }
     });
 }
-
 recalculateScores();
 
 // ========== PDF PROCESSING ==========
@@ -109,14 +91,12 @@ async function extractTextFromPDF(file) {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         let fullText = '';
-        
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             const pageText = textContent.items.map(item => item.str).join(' ');
             fullText += pageText + '\n';
-        }
-        
+        } 
         return fullText;
     } catch (error) {
         console.error('Error extracting PDF text:', error);
@@ -124,11 +104,8 @@ async function extractTextFromPDF(file) {
     }
 }
 
-async function extractTextFromTXT(file) {
-    return await file.text();
-}
+async function extractTextFromTXT(file) {  return await file.text(); }
 
-// ========== LLM INTEGRATION ==========
 async function initLLM(show = false) {
     try {
         const cfg = await openaiConfig({
@@ -146,14 +123,11 @@ async function initLLM(show = false) {
 async function analyzeMedicalDocuments(documentsData, providedPlayerName = '') {
     if (!provider) {
         await initLLM();
-        if (!provider) {
-            throw new Error('LLM not configured');
-        }
+        if (!provider) {   throw new Error('LLM not configured');  }
     }
 
     // Get system prompt from textarea
     const systemPrompt = document.getElementById('system-prompt').value.trim();
-    
     // Combine all document texts
     const combinedDocuments = documentsData.map(doc => 
         `--- Document: ${doc.filename} ---\n${doc.text}\n`
@@ -171,36 +145,20 @@ ${MEDICAL_ANALYSIS_PROMPT}`;
     try {
         const response = await fetch(`${provider.baseUrl}/chat/completions`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${provider.apiKey}`
-            },
+            headers: { 'Content-Type': 'application/json',  'Authorization': `Bearer ${provider.apiKey}` },
             body: JSON.stringify({
                 model: currentModel,
-                messages: [
-                    {
-                        role: 'system',
-                        content: systemPrompt
-                    },
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ]
+                messages: [ {  role: 'system',  content: systemPrompt }, { role: 'user',  content: prompt } ]
             })
         });
-
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error?.message || 'API request failed');
         }
-
         const data = await response.json();
         let content = data.choices[0].message.content.trim();
-        
         // Remove markdown code blocks if present
         content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        
         const analysis = JSON.parse(content);
         return analysis;
     } catch (error) {
@@ -226,53 +184,32 @@ function inferDocType(filename) {
 // ========== UPLOAD & PROCESS ==========
 document.getElementById('uploadFilesBtn').addEventListener('click', async () => {
     const files = document.getElementById('fileInput').files;
-    
-    if (files.length === 0) {
-        alert('Please select files to upload.');
-        return;
-    }
-
+    if (files.length === 0) {  alert('Please select files to upload.');  return; }
     const progressContainer = document.getElementById('uploadProgress');
     const progressBar = progressContainer.querySelector('.progress-bar');
     const progressText = document.getElementById('progressText');
-    
     progressContainer.classList.remove('d-none');
     document.getElementById('uploadFilesBtn').disabled = true;
-
     try {
         // Step 1: Extract text from all uploaded documents
         progressText.textContent = `Extracting text from ${files.length} document(s)...`;
         progressBar.style.width = '30%';
-        
         const documentsData = [];
         for (const file of Array.from(files)) {
             let text;
-            if (file.name.toLowerCase().endsWith('.pdf')) {
-                text = await extractTextFromPDF(file);
-            } else {
-                text = await extractTextFromTXT(file);
-            }
-            
-            documentsData.push({
-                filename: file.name,
-                docType: inferDocType(file.name),
-                text: text
-            });
+            if (file.name.toLowerCase().endsWith('.pdf')) { text = await extractTextFromPDF(file); }
+            else { text = await extractTextFromTXT(file); }
+            documentsData.push({  filename: file.name,  docType: inferDocType(file.name),  text: text });
         }
-
         // Step 2: Send all documents to LLM in a single request
         progressText.textContent = `Analyzing ${files.length} document(s) with AI...`;
         progressBar.style.width = '60%';
-        
         const analysis = await analyzeMedicalDocuments(documentsData, '');
-
         // Step 3: Create or update player
         progressText.textContent = 'Creating player profile...';
         progressBar.style.width = '90%';
-        
         const playerName = analysis.player?.name || 'Unknown Player';
         let player = players.find(p => p.name === playerName);
-
         if (!player) {
             // Create new player
             player = {
@@ -292,23 +229,19 @@ document.getElementById('uploadFilesBtn').addEventListener('click', async () => 
             player.handedness = analysis.player?.handedness || player.handedness;
             player.facts = analysis;
         }
-        
         // Validate and fix counts to match actual array lengths
         if (!player.facts.summaryCounts) player.facts.summaryCounts = {};
         player.facts.summaryCounts.surgeriesTotal = (player.facts.surgeries || []).length;
         player.facts.summaryCounts.concussionsTotal = (player.facts.neuro?.concussions || []).length;
         player.facts.summaryCounts.cervicalNeurologicEventsTotal = (player.facts.neuro?.cervicalEvents || []).length;
-        
         const injuries = player.facts.injuries || [];
         player.facts.summaryCounts.majorInjuriesTotal = injuries.filter(i => i.severity === 'Major').length;
         player.facts.summaryCounts.moderateInjuriesTotal = injuries.filter(i => i.severity === 'Moderate').length;
         player.facts.summaryCounts.minorInjuriesTotal = injuries.filter(i => i.severity === 'Minor').length;
-        
         // Calculate major/non-major joint surgeries
         const surgeries = player.facts.surgeries || [];
         player.facts.summaryCounts.surgeriesMajorJoint = surgeries.filter(s => s.majorJoint).length;
         player.facts.summaryCounts.surgeriesNonMajorJoint = surgeries.filter(s => !s.majorJoint).length;
-        
         // Validate flags based on actual imaging findings
         if (!player.facts.flags) player.facts.flags = {};
         const imgs = player.facts.imagingFindings || [];
@@ -321,12 +254,9 @@ document.getElementById('uploadFilesBtn').addEventListener('click', async () => 
             img.structuredFindings?.degenerativeChange && 
             ['Moderate', 'Severe'].includes(img.structuredFindings.degenerativeChange)
         ) || imgs.some(img => img.structuredFindings?.postTraumaticArthritis === true);
-
         // Add all documents to player
         for (const docData of documentsData) {
-            player.documents.push({
-                filename: docData.filename,
-                docType: docData.docType,
+            player.documents.push({filename: docData.filename,docType: docData.docType,
                 uploadedAt: new Date().toISOString().split('T')[0]
             });
         }
@@ -335,22 +265,17 @@ document.getElementById('uploadFilesBtn').addEventListener('click', async () => 
         renderPlayerSelector();
         renderCompareCheckboxes();
         document.getElementById('fileInput').value = '';
-        
         progressText.textContent = 'Analysis complete!';
         progressBar.style.width = '100%';
         setTimeout(() => {
             progressContainer.classList.add('d-none');
             progressBar.style.width = '0%';
         }, 2000);
-        
         showToast(`document(s) analyzed successfully for ${playerName}!`);
-
     } catch (error) {
         console.error('Upload error:', error);
         showToast(`Error: ${error.message}`, 'danger');
-    } finally {
-        document.getElementById('uploadFilesBtn').disabled = false;
-    }
+    } finally { document.getElementById('uploadFilesBtn').disabled = false;  }
 });
 
 // ========== TAB B: PLAYER VIEW ==========
@@ -367,22 +292,14 @@ function renderPlayerSelector() {
 
 document.getElementById('playerSelector').addEventListener('change', (e) => {
     const playerId = parseInt(e.target.value);
-    if (!playerId) {
-    document.getElementById('playerDashboard').innerHTML = '';
-    return;
-    }
+    if (!playerId) { document.getElementById('playerDashboard').innerHTML = ''; return;  }
     currentPlayerView = playerId;
     renderPlayerDashboard(playerId);
 });
 
 function renderPlayerDashboard(playerId) {
     const player = players.find(p => p.id === playerId);
-    
-    if (!player) {
-        console.error('Player not found:', playerId);
-        return;
-    }
-    
+    if (!player) { console.error('Player not found:', playerId);  return; }
     // Ensure player has valid facts and score
     if (!player.facts) {
         player.facts = {
@@ -397,19 +314,15 @@ function renderPlayerDashboard(playerId) {
             timeline: []
         };
     }
-    
     // Recalculate score if missing or invalid
     if (player.score === undefined || player.score === null || isNaN(player.score)) {
         const result = calculateMSI(player.facts);
         player.score = result.msi;
         player.scoreBreakdown = result.breakdown;
     }
-    
     console.log('Rendering dashboard for:', player.name, 'Score:', player.score, 'Breakdown:', player.scoreBreakdown);
-    
     const scoreInfo = getScoreLabel(player.score);
     const explanation = getScoreExplanation(player.scoreBreakdown);
-
     // Initialize sort state if not exists
     if (!player.sortState) {
         player.sortState = {
@@ -423,7 +336,6 @@ function renderPlayerDashboard(playerId) {
     const sortedInjuries = [...(player.facts.injuries || [])].sort((a, b) => {
         const state = player.sortState.injuries;
         let aVal, bVal;
-        
         switch(state.column) {
             case 'date':
                 aVal = new Date(a.date || '1900-01-01');
@@ -449,7 +361,6 @@ function renderPlayerDashboard(playerId) {
             default:
                 return 0;
         }
-        
         if (aVal < bVal) return state.direction === 'asc' ? -1 : 1;
         if (aVal > bVal) return state.direction === 'asc' ? 1 : -1;
         return 0;
@@ -549,6 +460,35 @@ function renderPlayerDashboard(playerId) {
                 </div>
             ` : ''}
             </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><h5>Missed Time / Availability &amp; Medical Flags</h5></div>
+        <div class="card-body">
+        <h6>Missed Time / Availability</h6>
+        <p>${player.facts.availability?.availabilityNarrative || 'No data'}</p>
+        ${(player.facts.availability?.missedGamesBySeason || []).length > 0 ? `
+            <table class="table table-sm">
+                <thead><tr><th>Season</th><th>Missed Games</th><th>Reason</th></tr></thead>
+                <tbody>
+                ${player.facts.availability.missedGamesBySeason.map(s => `
+                    <tr><td>${s.season}</td><td>${s.missedGames}</td><td>${s.reason || 'N/A'}</td></tr>
+                `).join('')}
+                </tbody>
+            </table>
+        ` : ''}
+
+        <h6 class="mt-3">Medical Flags</h6>
+        <div>
+            ${player.facts.flags?.cartilageDegeneration ? '<span class="badge bg-danger me-1">Cartilage Degeneration</span>' : ''}
+            ${player.facts.flags?.looseBodies ? '<span class="badge bg-danger me-1">Loose Bodies</span>' : ''}
+            ${player.facts.flags?.osteoarthritisOrArthrosis ? '<span class="badge bg-danger me-1">Osteoarthritis</span>' : ''}
+            ${player.facts.flags?.recurrentInstability ? '<span class="badge bg-warning me-1">Recurrent Instability</span>' : ''}
+            ${player.facts.flags?.stressFractureHistory ? '<span class="badge bg-warning me-1">Stress Fracture History</span>' : ''}
+            ${player.facts.summaryCounts?.recurrenceTotal > 0 ? `<span class="badge bg-warning text-dark me-1">${player.facts.summaryCounts.recurrenceTotal} Recurrences</span>` : ''}
+            ${!player.facts.flags?.cartilageDegeneration && !player.facts.flags?.looseBodies && !player.facts.flags?.osteoarthritisOrArthrosis && !player.facts.flags?.recurrentInstability ? '<span class="badge bg-success">No Major Flags</span>' : ''}
         </div>
         </div>
     </div>
@@ -787,29 +727,6 @@ function renderPlayerDashboard(playerId) {
             </tbody>
         </table>
 
-        <h6 class="mt-3">Missed Time / Availability</h6>
-        <p>${player.facts.availability?.availabilityNarrative || 'No data'}</p>
-        ${(player.facts.availability?.missedGamesBySeason || []).length > 0 ? `
-            <table class="table table-sm">
-                <thead><tr><th>Season</th><th>Missed Games</th><th>Reason</th></tr></thead>
-                <tbody>
-                ${player.facts.availability.missedGamesBySeason.map(s => `
-                    <tr><td>${s.season}</td><td>${s.missedGames}</td><td>${s.reason || 'N/A'}</td></tr>
-                `).join('')}
-                </tbody>
-            </table>
-        ` : ''}
-
-        <h6 class="mt-3">Medical Flags</h6>
-        <div>
-            ${player.facts.flags?.cartilageDegeneration ? '<span class="badge bg-danger me-1">Cartilage Degeneration</span>' : ''}
-            ${player.facts.flags?.looseBodies ? '<span class="badge bg-danger me-1">Loose Bodies</span>' : ''}
-            ${player.facts.flags?.osteoarthritisOrArthrosis ? '<span class="badge bg-danger me-1">Osteoarthritis</span>' : ''}
-            ${player.facts.flags?.recurrentInstability ? '<span class="badge bg-warning me-1">Recurrent Instability</span>' : ''}
-            ${player.facts.flags?.stressFractureHistory ? '<span class="badge bg-warning me-1">Stress Fracture History</span>' : ''}
-            ${player.facts.summaryCounts?.recurrenceTotal > 0 ? `<span class="badge bg-warning text-dark me-1">${player.facts.summaryCounts.recurrenceTotal} Recurrences</span>` : ''}
-            ${!player.facts.flags?.cartilageDegeneration && !player.facts.flags?.looseBodies && !player.facts.flags?.osteoarthritisOrArthrosis && !player.facts.flags?.recurrentInstability ? '<span class="badge bg-success">No Major Flags</span>' : ''}
-        </div>
         </div>
     </div>
 
@@ -817,82 +734,116 @@ function renderPlayerDashboard(playerId) {
         <div class="card-header"><h5>Medical Timeline</h5></div>
         <div class="card-body">
         ${(() => {
-            // Build comprehensive timeline from injuries, surgeries, and missed games
+            // Build comprehensive timeline from clinically significant injuries and surgeries only
             const timelineEvents = [];
-            
-            // Add injuries
+
+            // Add only clinically significant injuries (not incidental MRI findings)
             (player.facts.injuries || []).forEach(inj => {
-                if (inj.date) {
+                if (!inj.date) return;
+                
+                // Filter criteria: Include only if injury meets at least one of these:
+                // 1. Has actual time loss (games or practice)
+                // 2. Is Major or Moderate severity
+                // 3. Required surgery
+                // 4. Required significant treatment (injections)
+                const hasTimeLoss = (inj.timeLost?.missedGames > 0) || (inj.timeLost?.missedPracticeWeeks > 0);
+                const isSignificantSeverity = inj.severity === 'Major' || inj.severity === 'Moderate';
+                const hadSurgery = inj.treatment?.surgery === true;
+                const hadSignificantTreatment = inj.treatment?.injection && 
+                    inj.treatment.injection !== 'None' && 
+                    inj.treatment.injection !== 'Unknown';
+                
+                const isClinicallySignificant = hasTimeLoss || isSignificantSeverity || hadSurgery || hadSignificantTreatment;
+                
+                if (isClinicallySignificant) {
+                    const timeLossParts = [];
+                    if (inj.timeLost?.missedGames > 0) timeLossParts.push(`${inj.timeLost.missedGames} game(s)`);
+                    if (inj.timeLost?.missedPracticeWeeks > 0) timeLossParts.push(`${inj.timeLost.missedPracticeWeeks} practice week(s)`);
+
+                    // Build concise clinical summary from available evidence fields
+                    const summaryParts = [];
+                    if (inj.clinicalSummary) {
+                        summaryParts.push(inj.clinicalSummary);
+                    } else {
+                        if (inj.severityReason) summaryParts.push(inj.severityReason);
+                        if (inj.statusReason && inj.statusReason !== inj.severityReason) summaryParts.push(inj.statusReason);
+                        if (!summaryParts.length && inj.notes) summaryParts.push(inj.notes);
+                    }
+                    const clinicalSummary = summaryParts.join(' ').replace(/\.\s+/g, '. ').trim();
+
                     timelineEvents.push({
                         date: inj.date,
                         type: 'injury',
                         icon: 'bi-bandaid-fill',
-                        color: 'danger',
+                        color: inj.severity === 'Major' ? 'danger' : inj.severity === 'Moderate' ? 'warning' : 'secondary',
                         title: inj.injuryName || 'Injury',
-                        details: `${inj.bodyRegion || 'Unknown'} ${inj.side !== 'NA' ? `(${inj.side})` : ''} - ${inj.severity || 'Unknown'} ${inj.type || ''}`,
-                        missedGames: inj.timeLost?.missedGames || 0
+                        meta: `${inj.bodyRegion || 'Unknown'}${inj.side && inj.side !== 'NA' ? ` (${inj.side})` : ''} · ${inj.severity || 'Unknown'} ${inj.type || ''} · ${inj.mechanism || 'Unknown mechanism'}`,
+                        clinicalSummary: clinicalSummary || null,
+                        timeLoss: timeLossParts.length > 0 ? timeLossParts.join(', ') : null,
+                        status: inj.currentStatus || null,
+                        statusColor: inj.currentStatus === 'Recovered' || inj.currentStatus === 'Asymptomatic' ? 'success' :
+                                     inj.currentStatus === 'Symptomatic' || inj.currentStatus === 'Ongoing' ? 'danger' : 'secondary',
                     });
                 }
             });
-            
+
             // Add surgeries
             (player.facts.surgeries || []).forEach(surg => {
                 if (surg.date) {
+                    // Build concise clinical summary for surgery
+                    const surgSummaryParts = [];
+                    if (surg.clinicalSummary) {
+                        surgSummaryParts.push(surg.clinicalSummary);
+                    } else {
+                        if (surg.procedureCategoryReason) surgSummaryParts.push(surg.procedureCategoryReason);
+                        if (surg.outcome?.outcomeReason) surgSummaryParts.push(surg.outcome.outcomeReason);
+                    }
+                    const surgClinicalSummary = surgSummaryParts.join(' ').replace(/\.\s+/g, '. ').trim();
+
+                    const outcomeColor = surg.outcome?.residualSymptoms === 'None' ? 'success' :
+                                        surg.outcome?.residualSymptoms === 'Severe' || surg.outcome?.residualSymptoms === 'Moderate' ? 'danger' : 'warning';
                     timelineEvents.push({
                         date: surg.date,
                         type: 'surgery',
                         icon: 'bi-scissors',
                         color: 'primary',
                         title: surg.procedure || 'Surgery',
-                        details: `${surg.bodyRegion || 'Unknown'} ${surg.side !== 'NA' ? `(${surg.side})` : ''} - ${surg.procedureCategory || 'Unknown'}`,
-                        outcome: surg.outcome?.residualSymptoms || 'Unknown'
+                        meta: `${surg.bodyRegion || 'Unknown'}${surg.side && surg.side !== 'NA' ? ` (${surg.side})` : ''} · ${surg.procedureCategory || 'Unknown'}${surg.revision ? ' · Revision' : ''}`,
+                        clinicalSummary: surgClinicalSummary || null,
+                        timeLoss: null,
+                        outcome: surg.outcome?.residualSymptoms || null,
+                        outcomeColor,
                     });
                 }
             });
-            
-            // Add missed games by season
-            (player.facts.availability?.missedGamesBySeason || []).forEach(season => {
-                if (season.missedGames > 0) {
-                    timelineEvents.push({
-                        date: `${season.season}-09-01`, // Approximate season start
-                        type: 'missed',
-                        icon: 'bi-calendar-x',
-                        color: 'warning',
-                        title: `${season.season} Season`,
-                        details: `Missed ${season.missedGames} game(s)`,
-                        reason: season.reason || 'Not specified'
-                    });
-                }
-            });
-            
+
             // Sort by date (most recent first)
             timelineEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
+
             if (timelineEvents.length === 0) {
                 return '<p class="text-muted">No timeline data available</p>';
             }
-            
+
             return `
                 <div class="timeline">
                     ${timelineEvents.map(event => `
                         <div class="timeline-item mb-3 pb-3 border-bottom">
                             <div class="d-flex align-items-start">
-                                <div class="me-3">
+                                <div class="me-3 pt-1">
                                     <i class="bi ${event.icon} text-${event.color} fs-4"></i>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">
-                                                <span class="badge bg-${event.color} me-2">${event.type.toUpperCase()}</span>
-                                                ${event.title}
-                                            </h6>
-                                            <p class="mb-1 text-muted small">${formatDate(event.date)}</p>
-                                            <p class="mb-1">${event.details}</p>
-                                            ${event.missedGames ? `<small class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>Missed ${event.missedGames} game(s)</small>` : ''}
-                                            ${event.reason ? `<small class="text-muted d-block">Reason: ${event.reason}</small>` : ''}
-                                            ${event.outcome ? `<small class="text-muted d-block">Outcome: ${event.outcome}</small>` : ''}
-                                        </div>
+                                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                                        <span class="badge bg-${event.color}">${event.type.toUpperCase()}</span>
+                                        <strong>${event.title}</strong>
+                                        <span class="text-muted small">${formatDate(event.date)}</span>
+                                    </div>
+                                    <div class="text-muted small mb-1">${event.meta}</div>
+                                    ${event.clinicalSummary ? `<p class="mb-1 small">${event.clinicalSummary}</p>` : ''}
+                                    <div class="d-flex flex-wrap gap-2 mt-1">
+                                        ${event.timeLoss ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle"><i class="bi bi-clock me-1"></i>Time lost: ${event.timeLoss}</span>` : ''}
+                                        ${event.status ? `<span class="badge bg-${event.statusColor || 'secondary'} bg-opacity-10 text-${event.statusColor || 'secondary'} border border-${event.statusColor || 'secondary'}-subtle">${event.status}</span>` : ''}
+                                        ${event.outcome ? `<span class="badge bg-${event.outcomeColor || 'secondary'} bg-opacity-10 text-${event.outcomeColor || 'secondary'} border border-${event.outcomeColor || 'secondary'}-subtle">Residual: ${event.outcome}</span>` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -903,8 +854,91 @@ function renderPlayerDashboard(playerId) {
         })()}
         </div>
     </div>
+
+    ${(() => {
+        const imgs = player.facts.imagingFindings || [];
+        if (imgs.length === 0) return '';
+
+        // Determine date range of imaging
+        const imgDates = imgs.map(i => i.date).filter(Boolean).sort();
+        const dateRangeText = imgDates.length > 1
+            ? `between ${formatDate(imgDates[0])} and ${formatDate(imgDates[imgDates.length - 1])}`
+            : imgDates.length === 1 ? `on ${formatDate(imgDates[0])}` : '';
+
+        // Group by bodyRegion + side
+        const groups = new Map();
+        imgs.forEach(img => {
+            const key = `${img.bodyRegion || 'Other'}|${img.side && img.side !== 'NA' ? img.side : ''}`;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(img);
+        });
+
+        const renderStructuredFindings = (sf) => {
+            if (!sf) return '';
+            const lines = [];
+            if (sf.degenerativeChange && sf.degenerativeChange !== 'None' && sf.degenerativeChange !== 'Unknown') lines.push(`<strong>Degenerative Change:</strong> ${sf.degenerativeChange}`);
+            if (sf.cartilageDamage && sf.cartilageDamage !== 'None' && sf.cartilageDamage !== 'Unknown') lines.push(`<strong>Cartilage Damage:</strong> ${sf.cartilageDamage}`);
+            if (sf.labrumMeniscusStatus && sf.labrumMeniscusStatus !== 'Normal' && sf.labrumMeniscusStatus !== 'Unknown') lines.push(`<strong>Labrum/Meniscus:</strong> ${sf.labrumMeniscusStatus}`);
+            if (sf.tendonStatus && sf.tendonStatus !== 'Normal' && sf.tendonStatus !== 'Unknown') lines.push(`<strong>Tendon:</strong> ${sf.tendonStatus}`);
+            if (sf.ligamentStatus && sf.ligamentStatus !== 'Normal' && sf.ligamentStatus !== 'Unknown') lines.push(`<strong>Ligament:</strong> ${sf.ligamentStatus}`);
+            if (sf.effusion && sf.effusion !== 'None' && sf.effusion !== 'Unknown') lines.push(`<strong>Effusion:</strong> ${sf.effusion}`);
+            if (sf.looseBodies) lines.push(`<strong>Loose Bodies:</strong> Present`);
+            if (sf.nonunionOrDelayedUnion) lines.push(`<strong>Nonunion / Delayed Union:</strong> Present`);
+            if (sf.avascularNecrosisConcern) lines.push(`<strong>AVN Concern:</strong> Present`);
+            if (sf.postTraumaticArthritis) lines.push(`<strong>Post-Traumatic Arthritis:</strong> Present`);
+            if (sf.stressReactionOrFracture) lines.push(`<strong>Stress Reaction / Fracture:</strong> Present`);
+            if (sf.hardwareComplication && sf.hardwareComplication !== 'None' && sf.hardwareComplication !== 'Unknown') lines.push(`<strong>Hardware Complication:</strong> ${sf.hardwareComplication}`);
+            return lines.length ? `<ul class="mb-0 ps-3">${lines.map(l => `<li class="small">${l}</li>`).join('')}</ul>` : '';
+        };
+
+        const groupHtml = [...groups.entries()].map(([key, entries]) => {
+            const [region, side] = key.split('|');
+            const regionLabel = side ? `${region} (${side})` : region;
+            const modalities = [...new Set(entries.map(e => e.modality).filter(Boolean))].join(', ');
+            const latestEntry = entries.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            const impression = latestEntry.imaging?.finding || null;
+            const structuredHtml = renderStructuredFindings(latestEntry.structuredFindings);
+
+            return `
+                <div class="mb-4">
+                    <h6 class="fw-bold border-bottom pb-1 mb-2">
+                        <i class="bi bi-file-medical me-1 text-primary"></i>${regionLabel}
+                        <span class="text-muted fw-normal small ms-2">${modalities} · ${formatDate(latestEntry.date)}</span>
+                    </h6>
+                    ${impression ? `
+                        <p class="mb-1"><strong>Impression:</strong> ${impression}</p>
+                    ` : ''}
+                    ${structuredHtml ? `
+                        <p class="mb-1 mt-2"><strong>Findings:</strong></p>
+                        ${structuredHtml}
+                    ` : ''}
+                    ${entries.length > 1 ? `
+                        <details class="mt-2">
+                            <summary class="text-muted small" style="cursor:pointer;">Show ${entries.length - 1} additional study/studies</summary>
+                            ${entries.slice(1).map(e => `
+                                <div class="mt-2 ps-2 border-start border-2">
+                                    <p class="mb-1 small text-muted">${e.modality || ''} · ${formatDate(e.date)}</p>
+                                    ${e.imaging?.finding ? `<p class="mb-1 small"><strong>Impression:</strong> ${e.imaging.finding}</p>` : ''}
+                                    ${renderStructuredFindings(e.structuredFindings)}
+                                </div>
+                            `).join('')}
+                        </details>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+
+        return `
+    <div class="card mb-3" id="radiology-card-${playerId}">
+        <div class="card-header"><h5><i class="bi bi-radioactive me-2 text-primary"></i>Radiology Findings &amp; Impressions</h5></div>
+        <div class="card-body">
+            <p class="text-muted mb-3">The following imaging studies were conducted ${dateRangeText} for <strong>${player.name}</strong>.</p>
+            ${groupHtml}
+        </div>
+    </div>
+        `;
+    })()}
     `;
-    
     // Initialize Bootstrap popovers (for imaging findings if any remain)
     setTimeout(() => {
         const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
@@ -931,7 +965,6 @@ window.toggleInjuryDetails = function(playerId, injuryIndex) {
 window.toggleSurgeryDetails = function(playerId, surgeryIndex) {
     const detailsRow = document.querySelector(`.surgery-details-${playerId}-${surgeryIndex}`);
     const chevron = document.querySelector(`.surgery-chevron-${playerId}-${surgeryIndex}`);
-    
     if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
         detailsRow.style.display = 'table-row';
         chevron.classList.remove('bi-chevron-down');
@@ -946,7 +979,6 @@ window.toggleSurgeryDetails = function(playerId, surgeryIndex) {
 window.toggleImagingDetails = function(playerId, imagingIndex) {
     const detailsRow = document.querySelector(`.imaging-details-${playerId}-${imagingIndex}`);
     const chevron = document.querySelector(`.imaging-chevron-${playerId}-${imagingIndex}`);
-    
     if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
         detailsRow.style.display = 'table-row';
         chevron.classList.remove('bi-chevron-down');
@@ -1036,137 +1068,26 @@ window.toggleAllDetails = function(playerId) {
 window.downloadPlayerReport = function(playerId) {
     const player = players.find(p => p.id === playerId);
     if (!player) return;
-    
     // Don't include compare section in PDF
     const hasCompareData = false;
-    
     // Don't toggle - print exactly as displayed on UI
-    
     // Create a style element for print-specific styles
     const printStyle = document.createElement('style');
     printStyle.id = 'print-styles';
     printStyle.innerHTML = getPrintStyles(player.name, hasCompareData);
-    
     // Add print styles to document
     document.head.appendChild(printStyle);
-    
     // Set document title for the PDF filename
     const originalTitle = document.title;
     document.title = `${player.name}_Medical_Report${hasCompareData ? '_with_Comparison' : ''}`;
-    
     // Trigger print dialog
     window.print();
-    
     // Restore original title and remove print styles after a short delay
     setTimeout(() => {
         document.title = originalTitle;
         const styleElement = document.getElementById('print-styles');
-        if (styleElement) {
-            styleElement.remove();
-        }
-    }, 1000);
+        if (styleElement) {    styleElement.remove(); }}, 1000);
 };
-
-function sortPlayerTable(playerId, tableType, column) {
-    const player = players.find(p => p.id === playerId);
-    if (!player || !player.sortState) return;
-    
-    const state = player.sortState[tableType];
-    
-    // Toggle direction if same column, otherwise set to descending
-    if (state.column === column) {
-        state.direction = state.direction === 'asc' ? 'desc' : 'asc';
-    } else {
-        state.column = column;
-        state.direction = 'desc';
-    }
-    
-    // Re-render the dashboard
-    renderPlayerDashboard(playerId);
-}
-
-function openEditFactsModal(playerId) {
-    currentPlayerView = playerId;
-    const player = players.find(p => p.id === playerId);
-    const counts = player.facts.summaryCounts || {};
-    
-    document.getElementById('editSurgeries').value = counts.surgeriesTotal || 0;
-    document.getElementById('editMajorJoint').value = counts.surgeriesMajorJoint || 0;
-    document.getElementById('editRecurrence').value = counts.recurrenceTotal || 0;
-    document.getElementById('editMissedGames').value = counts.missedGamesTotal || 0;
-    document.getElementById('editConcussions').value = counts.concussionsTotal || 0;
-    document.getElementById('editCartilage').checked = player.facts.flags?.cartilageDegeneration || false;
-    document.getElementById('editLooseBodies').checked = player.facts.flags?.looseBodies || false;
-    document.getElementById('editCervical').checked = (counts.cervicalNeurologicEventsTotal || 0) > 0;
-
-    new bootstrap.Modal(document.getElementById('editFactsModal')).show();
-}
-
-document.getElementById('saveFactsBtn').addEventListener('click', () => {
-    const player = players.find(p => p.id === currentPlayerView);
-    if (!player.facts.summaryCounts) player.facts.summaryCounts = {};
-    if (!player.facts.flags) player.facts.flags = {};
-    if (!player.facts.availability) player.facts.availability = {};
-    if (!player.facts.scoringInputs) player.facts.scoringInputs = {};
-    
-    // Update counts
-    player.facts.summaryCounts.surgeriesTotal = parseInt(document.getElementById('editSurgeries').value);
-    player.facts.summaryCounts.surgeriesMajorJoint = parseInt(document.getElementById('editMajorJoint').value);
-    player.facts.summaryCounts.recurrenceTotal = parseInt(document.getElementById('editRecurrence').value);
-    player.facts.summaryCounts.missedGamesTotal = parseInt(document.getElementById('editMissedGames').value);
-    player.facts.summaryCounts.concussionsTotal = parseInt(document.getElementById('editConcussions').value);
-    
-    // Update flags
-    player.facts.flags.cartilageDegeneration = document.getElementById('editCartilage').checked;
-    player.facts.flags.looseBodies = document.getElementById('editLooseBodies').checked;
-    player.facts.summaryCounts.cervicalNeurologicEventsTotal = document.getElementById('editCervical').checked ? 1 : 0;
-    
-    // Update scoring inputs for flags
-    const structuralFlags = 
-        (player.facts.flags.fractureNonunionOrDelayedUnion ? 1 : 0) +
-        (player.facts.flags.avascularNecrosisConcern ? 1 : 0) +
-        (player.facts.flags.hardwareFailureOrBrokenImplant ? 1 : 0) +
-        (player.facts.flags.looseBodies ? 1 : 0);
-    
-    const degenerativeScore = 
-        (player.facts.flags.osteoarthritisOrArthrosis ? 3 : 0) +
-        (player.facts.flags.cartilageDegeneration ? 3 : 0);
-    
-    const instabilityScore = 
-        (player.facts.flags.recurrentInstability ? 3 : 0) +
-        (player.facts.flags.recurrentMuscleStrain ? 2 : 0);
-    
-    player.facts.scoringInputs.structuralRedFlagCount = structuralFlags;
-    player.facts.scoringInputs.degenerativeBurdenScore = degenerativeScore;
-    player.facts.scoringInputs.instabilityBurdenScore = instabilityScore;
-    
-    // Recalculate score for this player
-    const result = calculateMSI(player.facts);
-    player.score = result.msi;
-    player.scoreBreakdown = result.breakdown;
-    
-    console.log('Score updated:', player.score, 'Breakdown:', player.scoreBreakdown);
-    
-    // Close modal first
-    bootstrap.Modal.getInstance(document.getElementById('editFactsModal')).hide();
-    
-    // Force re-render with a small delay to ensure modal is closed
-    setTimeout(() => {
-        renderPlayerDashboard(currentPlayerView);
-        renderCompareTable();
-        showToast(`Facts updated! New score: ${player.score}`);
-    }, 100);
-});
-
-function showEvidence(docName, page, snippet) {
-    document.getElementById('evidenceContent').innerHTML = `
-    <p><strong>Document:</strong> ${docName}</p>
-    <p><strong>Page:</strong> ${page}</p>
-    <p><strong>Excerpt:</strong></p>
-    <blockquote class="blockquote bg-light p-3 rounded">${snippet}</blockquote>
-    `;
-    new bootstrap.Modal(document.getElementById('evidenceModal')).show();
-}
 
 // ========== TAB C: COMPARE PLAYERS ==========
 function renderCompareCheckboxes() {
@@ -1185,11 +1106,8 @@ function renderCompareCheckboxes() {
     document.querySelectorAll('.compare-checkbox').forEach(cb => {
     cb.addEventListener('change', (e) => {
         const id = parseInt(e.target.value);
-        if (e.target.checked) {
-        selectedComparePlayers.add(id);
-        } else {
-        selectedComparePlayers.delete(id);
-        }
+        if (e.target.checked) {  selectedComparePlayers.add(id); } 
+        else { selectedComparePlayers.delete(id); }
         renderCompareTable();
     });
     });
@@ -1200,13 +1118,10 @@ let compareTableSort = { column: 'score', direction: 'desc' };
 function renderCompareTable() {
     const tbody = document.getElementById('compareTableBody');
     tbody.innerHTML = '';
-
     let selected = players.filter(p => selectedComparePlayers.has(p.id));
-    
     // Sort the selected players
     selected.sort((a, b) => {
         let aVal, bVal;
-        
         switch(compareTableSort.column) {
             case 'name':
                 aVal = a.name.toLowerCase();
@@ -1235,12 +1150,10 @@ function renderCompareTable() {
             default:
                 return 0;
         }
-        
         if (aVal < bVal) return compareTableSort.direction === 'asc' ? -1 : 1;
         if (aVal > bVal) return compareTableSort.direction === 'asc' ? 1 : -1;
         return 0;
     });
-    
     selected.forEach(p => {
         // Ensure score is valid
         if (p.score === undefined || p.score === null || isNaN(p.score)) {
@@ -1248,11 +1161,9 @@ function renderCompareTable() {
             p.score = result.msi;
             p.scoreBreakdown = result.breakdown;
         }
-        
         const scoreInfo = getScoreLabel(p.score);
         const counts = p.facts?.summaryCounts || {};
         const flags = p.facts?.flags || {};
-        
         // Build imaging flags list
         const imagingFlags = [];
         if (flags.cartilageDegeneration) imagingFlags.push('Cartilage');
@@ -1262,7 +1173,6 @@ function renderCompareTable() {
         if (flags.avascularNecrosisConcern) imagingFlags.push('AVN');
         if (flags.hardwareFailureOrBrokenImplant) imagingFlags.push('Hardware');
         if ((counts.cervicalNeurologicEventsTotal || 0) > 0) imagingFlags.push('Cervical');
-        
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><strong>${p.name}</strong></td>
@@ -1283,10 +1193,7 @@ function renderCompareTable() {
 function sortCompareTableBy(column) {
     if (compareTableSort.column === column) {
         compareTableSort.direction = compareTableSort.direction === 'asc' ? 'desc' : 'asc';
-    } else {
-        compareTableSort.column = column;
-        compareTableSort.direction = 'desc';
-    }
+    } else { compareTableSort.column = column; compareTableSort.direction = 'desc';  }
     renderCompareTable();
 }
 
@@ -1295,10 +1202,7 @@ if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.sortable').forEach(th => {
             th.style.cursor = 'pointer';
-            th.addEventListener('click', () => {
-                const sortKey = th.dataset.sort;
-                sortCompareTableBy(sortKey);
-            });
+            th.addEventListener('click', () => { const sortKey = th.dataset.sort; sortCompareTableBy(sortKey); });
         });
     });
 }
@@ -1307,32 +1211,23 @@ if (typeof document !== 'undefined') {
 document.getElementById('exportPDF').addEventListener('click', (e) => {
     e.preventDefault();
     const selected = players.filter(p => selectedComparePlayers.has(p.id));
-    
-    if (selected.length === 0) {
-        showToast('Please select at least one player to export', 'warning');
-        return;
-    }
-
+    if (selected.length === 0) { showToast('Please select at least one player to export', 'warning');  return; }
     try {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('l', 'mm', 'a4'); // landscape orientation
-        
         // Add title
         doc.setFontSize(16);
         doc.setTextColor(40);
         doc.text('Player Medical Comparison Report', 14, 15);
-        
         // Add date
         doc.setFontSize(10);
         doc.setTextColor(100);
         doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 22);
-        
         // Prepare table data
         const tableData = selected.map(p => {
             const counts = p.facts.summaryCounts || {};
             const flags = p.facts.flags || {};
             const scoreInfo = getScoreLabel(p.score);
-            
             // Build imaging flags list
             const imagingFlags = [];
             if (flags.cartilageDegeneration) imagingFlags.push('Cartilage');
@@ -1342,7 +1237,6 @@ document.getElementById('exportPDF').addEventListener('click', (e) => {
             if (flags.avascularNecrosisConcern) imagingFlags.push('AVN');
             if (flags.hardwareFailureOrBrokenImplant) imagingFlags.push('Hardware');
             if ((counts.cervicalNeurologicEventsTotal || 0) > 0) imagingFlags.push('Cervical');
-            
             return [
                 p.name,
                 p.draftYear || 'N/A',
@@ -1375,16 +1269,8 @@ document.getElementById('exportPDF').addEventListener('click', (e) => {
             head: [columns.map(col => col.header)],
             body: tableData,
             theme: 'grid',
-            headStyles: {
-                fillColor: [33, 37, 41],
-                textColor: [255, 255, 255],
-                fontStyle: 'bold',
-                halign: 'center'
-            },
-            bodyStyles: {
-                fontSize: 9,
-                cellPadding: 3
-            },
+            headStyles: { fillColor: [33, 37, 41], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'},
+            bodyStyles: { fontSize: 9, cellPadding: 3 },
             columnStyles: {
                 0: { cellWidth: 35 }, // Player
                 1: { cellWidth: 20, halign: 'center' }, // Draft Year
@@ -1432,7 +1318,7 @@ document.getElementById('exportPDF').addEventListener('click', (e) => {
                         data.cell.styles.fillColor = [40, 167, 69]; // success green
                         data.cell.styles.textColor = [255, 255, 255];
                         data.cell.styles.fontStyle = 'bold';
-                    } else if (data.cell.text[0] === 'Medium Risk') {
+                    } else if (data.cell.text[0] === 'Moderate Risk') {
                         data.cell.styles.fillColor = [255, 193, 7]; // warning yellow
                         data.cell.styles.textColor = [0, 0, 0];
                         data.cell.styles.fontStyle = 'bold';
@@ -1461,7 +1347,6 @@ document.getElementById('exportPDF').addEventListener('click', (e) => {
             doc.setPage(i);
             doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.getWidth() - 30, doc.internal.pageSize.getHeight() - 10);
         }
-        
         // Save the PDF
         doc.save('player-comparison.pdf');
         showToast('PDF exported successfully!');
@@ -1499,8 +1384,3 @@ document.getElementById('model-select').addEventListener('change', (e) => {
 // ========== INIT ==========
 renderPlayerSelector();
 renderCompareCheckboxes();
-
-
-
-
-
