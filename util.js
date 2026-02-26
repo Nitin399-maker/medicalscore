@@ -175,6 +175,7 @@ Important:
 - Fill in all required fields with best estimates from documents
 - CRITICAL: Ensure summaryCounts values match the actual array lengths (e.g., surgeriesTotal = surgeries.length)
 - Set flags to true ONLY when there is clear evidence in the imaging findings or medical history
+- CRITICAL: For all date fields, NEVER use "00" for unknown month or day. If only the year is known, use "YYYY-01-01". If the year and month are known but not the day, use the first day of that month (e.g., "YYYY-MM-01"). Never produce dates like "2017-00-00" or "2017-05-00".
 - Must and must return the valid json`;
 
 // ========== MEDICAL SCORE CALCULATION ==========
